@@ -1,7 +1,8 @@
 import React from "react";
 
-// Import the AdminMenu component
+// Import the Admin component
 import AdminMenu from "../../components/Admin/AdminMenu/AdminMenu";
+import AdminDashboard from "../../components/Admin/AdminDashboard/AdminDashboard";
 
 // import the auth hook context
 import { useAuth } from "../../../Context/AuthContext";
@@ -22,7 +23,7 @@ function Admin(props) {
                 <AdminMenu />
               </div>
               <div className="col-md-9 admin-right-side">
-                <h1>Admin</h1>
+                <AdminDashboard />
               </div>
             </div>
           </div>

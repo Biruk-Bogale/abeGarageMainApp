@@ -425,9 +425,15 @@ input:disabled {
   color: #1d2a52 !important;
 }
 
-
-.order_status{
+.order_status {
   display: flex;
   /* width: 50px; */
   align-items: center;
+}
+
+.services-section {
+  background: #f5f4f7 url(../images/dashboard_bg/dashboard_bg.png);
+  padding: 95px 0;
+  position: relative;
+  /* height: 100%; */
 }

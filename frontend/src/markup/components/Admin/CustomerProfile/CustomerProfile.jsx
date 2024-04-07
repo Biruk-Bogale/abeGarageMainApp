@@ -6,6 +6,7 @@ import { Table, Button } from "react-bootstrap";
 // import services
 import vehicleService from "../../../../services/vehicle.services";
 import customerService from "../../../../services/customer.services";
+import orderService from "../../../../services/order.services";
 
 // import the useAuth hook
 import { useAuth } from "../../../../Context/AuthContext";
@@ -14,6 +15,10 @@ import { useAuth } from "../../../../Context/AuthContext";
 import { FaEdit } from "react-icons/fa";
 import { FaCirclePlus } from "react-icons/fa6";
 import { GiCrossedBones } from "react-icons/gi";
+import { FaArrowUpRightFromSquare } from "react-icons/fa6";
+
+// import the date-fns library
+import { format } from "date-fns";
 
 // import react router dom
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -22,6 +27,7 @@ function CustomerProfile() {
   const navigate = useNavigate();
   const [customer1, setCustomer1] = useState("");
   const [vehicle1, setVehicle1] = useState([]);
+  const [order1, setOrder1] = useState([]);
   const [showHide, setShowHide] = useState(false);
 
   const [vehicle_year, setVehicleYear] = useState("");
@@ -35,6 +41,7 @@ function CustomerProfile() {
 
   // vehicle error
   const [vehicle_error, setVehicleError] = useState("");
+  const [order_error, setOrderError] = useState("");
 
   function Show() {
     setShowHide(!showHide);
@@ -101,6 +108,14 @@ function CustomerProfile() {
     setVehicleColor(vehicleColorDom.current.value);
   }
 
+  function handleEdit(id) {
+    navigate(`/admin/orders/order-update/${id}`);
+  }
+
+  function handleDetail(id) {
+    navigate(`/orders/order-detail/${id}`);
+  }
+
   //afunction to fetch customer data
   const fetchData1 = async () => {
     // console.log(formData);
@@ -158,9 +173,29 @@ function CustomerProfile() {
     setVehicleColor("");
   };
 
+  //afunction to fetch customer vehicle data
+  const fetchData3 = async () => {
+    try {
+      const data2 = await orderService.customerOrders(
+        customer_hash,
+        loggedInEmployeeToken
+      );
+
+      console.log(data2.data.customerOrder);
+
+      setOrder1(data2.data.customerOrder);
+      setOrderError("");
+    } catch (error) {
+      // console.log(error.response.data.error);
+      setOrder1([]);
+      setOrderError(error.response.data.error);
+    }
+  };
+
   useEffect(() => {
     fetchData1();
     fetchData2();
+    fetchData3();
   }, []);
 
   // submit handler
@@ -209,10 +244,12 @@ function CustomerProfile() {
           {/* Customer Info */}
           <div
             className=" ml-5 pb-4  d-flex order-danger "
-            style={{ borderLeft: "2px solid red" }}>
+            style={{ borderLeft: "2px solid red" }}
+          >
             <div
               className="ml-n5 bg-danger text-center d-flex align-items-center justify-content-center rounded-circle text-white font-weight-bolder"
-              style={{ width: "90px", height: "90px" }}>
+              style={{ width: "90px", height: "90px" }}
+            >
               Info
             </div>
             <div className=" ml-4 p-3 flex-grow-1">
@@ -254,7 +291,8 @@ function CustomerProfile() {
                 </span>
                 <span>
                   <Link
-                    to={`/admin/customer-update/${customer1.customer_hash}`}>
+                    to={`/admin/customer-update/${customer1.customer_hash}`}
+                  >
                     <FaEdit color="#081336" />
                   </Link>
                 </span>
@@ -266,10 +304,12 @@ function CustomerProfile() {
           <div className="d-flex">
             <div
               className=" pb-5 ml-5 d-flex "
-              style={{ borderLeft: "2px solid red" }}>
+              style={{ borderLeft: "2px solid red" }}
+            >
               <div
                 className="ml-n5 bg-danger text-center d-flex align-items-center justify-content-center rounded-circle text-white font-weight-bolder"
-                style={{ width: "90px", height: "90px" }}>
+                style={{ width: "90px", height: "90px" }}
+              >
                 Cars
               </div>
             </div>
@@ -325,7 +365,8 @@ function CustomerProfile() {
                   <div
                     onClick={Show}
                     className=" rounded-circle d-flex justify-content-center align-items-center "
-                    style={{ height: "25px", width: "25px" }}>
+                    style={{ height: "25px", width: "25px" }}
+                  >
                     <span>
                       {showHide ? (
                         <GiCrossedBones size={40} color="#C91236" />
@@ -465,7 +506,8 @@ function CustomerProfile() {
                               // onClick={spinner}
                               className="theme-btn btn-style-one"
                               type="submit"
-                              data-loading-text="Please wait...">
+                              data-loading-text="Please wait..."
+                            >
                               <span>
                                 {!"spin" ? (
                                   <BeatLoader color="white" size={8} />
@@ -483,7 +525,8 @@ function CustomerProfile() {
                                   fontWeight: "600",
                                   padding: "25px",
                                 }}
-                                role="alert">
+                                role="alert"
+                              >
                                 {/* {serverMsg} */}
                               </div>
                             )}
@@ -499,36 +542,105 @@ function CustomerProfile() {
             </div>
           </div>
 
-          {/* Order */}
-          <div className=" d-flex">
+          {/* customer Orders */}
+          <div className="d-flex">
             <div
-              className="pt-4 d-flex ml-5  "
-              style={{ borderLeft: "2px solid red" }}>
+              className=" pb-5 ml-5 d-flex "
+              style={{ borderLeft: "2px solid red" }}
+            >
               <div
-                className=" ml-n5 bg-danger text-center d-flex align-items-center justify-content-center rounded-circle text-white font-weight-bolder"
-                style={{ width: "90px", height: "90px" }}>
+                className="ml-n5 bg-danger text-center d-flex align-items-center justify-content-center rounded-circle text-white font-weight-bolder"
+                style={{ width: "90px", height: "90px" }}
+              >
                 Orders
               </div>
             </div>
-
-            <div className=" ml-5 w-100">
+            <div className=" ml-3 w-100 px-4 pb-0">
               <div>
                 <div>
-                  <h4 className="pt-4 font-weight-bold mt-2 mb-3">
-                    Orders Of Biruk
+                  <h4 className="font-weight-bold mt-2 mb-3">
+                    ORDERS OF{" "}
+                    {customer1.customer_first_name +
+                      " " +
+                      customer1.customer_last_name}
                   </h4>
                 </div>
+                <div className=" bg-white px-2 py-1 ">
+                  {vehicle1.length ? (
+                    <Table striped bordered hover>
+                      <thead>
+                        <tr>
+                          <th>Vehicle Make</th>
+                          <th>Order Date</th>
+                          <th>Received By</th>
+                          <th>Order Status</th>
+                          <th>Edit/View</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {order1.map((order) => (
+                          <tr key={order?.vehicle_id}>
+                            <td>{order?.vehicle_make}</td>
+                            <td className="order-date">
+                              {format(new Date(order.order_date), "MM/dd/yyyy")}
+                            </td>
+                            <td>{order?.employee_first_name}</td>
 
-                <div className="d-flex justify-content-between mb-n2">
-                  Bottstrap table
+                            <td className="border py-4">
+                              <h6
+                                className={
+                                  order.order_status
+                                    ? "text-center rounded-pill bg-success font-weight-bold text-white                            "
+                                    : "text-center rounded-pill bg-warning font-weight-bold"
+                                }
+                              >
+                                {order.order_status
+                                  ? "Completed"
+                                  : "In Progress"}
+                              </h6>
+                            </td>
+
+                            <td className="edit">
+                              <span
+                                onClick={() => handleEdit(order?.order_hash)}
+                                className="hover1"
+                              >
+                                <FaEdit color="#081336" />
+                              </span>
+
+                              <span
+                                onClick={() => handleDetail(order?.order_hash)}
+                              >
+                                <FaArrowUpRightFromSquare color="#081336" />
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  ) : (
+                    <div className="NoVehicle">
+                      <h2> {order_error}</h2>
+                    </div>
+                  )}
                 </div>
-
-                <span onClick={()=>handleAdd(customer1.customer_hash)}>
-                  <FaCirclePlus
-                    size={40}
-                    className="scale-on-hover cursor-pointer text-dark"
-                  />
-                </span>
+              </div>
+              <div className="mt-2" style={{ widows: "85%" }}>
+                <div className="pt-2 pb-3 d-flex justify-content-start">
+                  <div
+                    onClick={Show}
+                    className=" rounded-circle d-flex justify-content-center align-items-center "
+                    style={{ height: "25px", width: "25px" }}
+                  >
+                    <span>
+                      {showHide ? (
+                        <GiCrossedBones size={40} color="#C91236" />
+                      ) : (
+                        <FaCirclePlus size={40} color="#222B48" />
+                      )}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

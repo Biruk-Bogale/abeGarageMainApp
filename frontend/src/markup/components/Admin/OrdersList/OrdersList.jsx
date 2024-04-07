@@ -55,9 +55,10 @@ function OrdersList() {
     const fetchData = async () => {
       try {
         const data = await orderService.getAllOrder(token);
-        // console.log(data);
+        
+        console.log(data);
 
-        if (data?.statusText !== "OK") {
+        if (data?.status !== 200) {
           // set apiError to true
           setApiError(true);
 
@@ -75,7 +76,7 @@ function OrdersList() {
 
         // console.log(data?.data?.customers);
       } catch (error) {
-        // console.log(error);
+        console.log(error);
       }
     };
     fetchData();
@@ -96,7 +97,7 @@ function OrdersList() {
           <div className="auto-container">
             <div className="contact-title">
               <h2>
-                {"apiErrorMessage"}
+                {apiErrorMessage}
                 <span style={{ color: "red" }}> ___</span>
               </h2>
             </div>
