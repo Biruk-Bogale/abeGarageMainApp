@@ -4,6 +4,7 @@ const {
   getAllOrderss,
   getsingleOrderr,
   updateOrderr,
+  customerOrderss,
 } = require("../services/order.service");
 
 async function createOrder(req, res, next) {
@@ -91,4 +92,31 @@ async function updateorder(req, res, next) {
   }
 }
 
-module.exports = { createOrder, getAllOrders, getsingleOrder, updateorder };
+async function customerOrders(req, res, next) {
+  try {
+    const customerOrder = await customerOrderss(req.params.hash);
+
+    // console.log(customerOrder.length);
+
+    if (!customerOrder.length) {
+      return res.status(400).json({
+        error: "No Order Found!",
+      });
+    } else {
+      return res.status(200).json({
+        status: "Order Found!!",
+        customerOrder: customerOrder,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+module.exports = {
+  createOrder,
+  getAllOrders,
+  getsingleOrder,
+  updateorder,
+  customerOrders,
+};

@@ -43,5 +43,13 @@ router.put(
   orderController.updateorder
 );
 
+router.get(
+  "/api/order/customer/:hash",
+  //   [verifyToken, isAdmin],
+  orderController.customerOrders
+);
+
+
+
 // export the router
 module.exports = router;

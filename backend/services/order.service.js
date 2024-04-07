@@ -250,4 +250,53 @@ async function updateOrderr(order) {
   }
 }
 
-module.exports = { createOrderr, getAllOrderss, getsingleOrderr, updateOrderr };
+async function customerOrderss(order) {
+  // console.log(order);
+
+  try {
+    const query =
+      "SELECT customer_id FROM customer_identifier WHERE customer_hash = ?";
+
+    const rows = await connection.query(query, [order]);
+
+    // console.log(rows.length);
+
+    if (rows.length < 1) {
+      return false;
+    }
+
+    const query2 = `SELECT 
+    orders.order_date,
+    orders.order_hash,
+    customer_vehicle_info.vehicle_make, 
+    employee_info.employee_first_name,
+    order_status.order_status  
+    FROM orders 
+    INNER JOIN customer_info ON orders.customer_id = customer_info.customer_id 
+    INNER JOIN  customer_identifier ON orders.customer_id = customer_identifier.customer_id  
+    INNER JOIN customer_vehicle_info ON orders.customer_id = customer_vehicle_info.customer_id
+    INNER JOIN employee_info ON orders.employee_id = employee_info.employee_id
+    INNER JOIN order_status ON orders.order_id = order_status.order_id 
+    WHERE orders.customer_id = ?`;
+
+    const rows2 = await connection.query(query2, [rows[0].customer_id]);
+
+    // console.log(rows2.length);
+
+    if (rows2.length < 1) {
+      return false;
+    }
+
+    return rows2;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+module.exports = {
+  createOrderr,
+  getAllOrderss,
+  getsingleOrderr,
+  updateOrderr,
+  customerOrderss,
+};
