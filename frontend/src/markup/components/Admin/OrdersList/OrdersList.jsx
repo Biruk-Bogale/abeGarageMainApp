@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // import recat components
-import { Table, Button } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 
 // import react icons
 import { FaEdit } from "react-icons/fa";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
+
+import { BeatLoader } from "react-spinners";
 
 // import the auth hook
 import { useAuth } from "../../../../Context/AuthContext";
@@ -23,16 +25,10 @@ function OrdersList() {
   //  employees state to store the emplooyes data
   const [orders, setOrders] = useState([]);
 
-  // console.log(orders[0]?.order_id);
-
-  // console.log(customers);
-
-  // console.log(employees);
-  // const { id } = useParams();
-
   const navigate = useNavigate();
 
-  // console.log(employees[0].employee_id)
+  // spinner handler state
+  const [spin, setSpinner] = useState(false);
 
   // to serve as aflag to show the error message
   const [apiError, setApiError] = useState(false);
@@ -48,15 +44,12 @@ function OrdersList() {
   if (employee) {
     token = employee?.employee_token;
   }
-  //   console.log(employee?.employee_token)
 
   // fetch employees data using useEffect
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await orderService.getAllOrder(token);
-        
-        console.log(data);
 
         if (data?.status !== 200) {
           // set apiError to true
@@ -74,9 +67,11 @@ function OrdersList() {
         // // set customers data
         setOrders(data?.data.Orders);
 
-        // console.log(data?.data?.customers);
+        setTimeout(() => {
+          setSpinner(!spin);
+        }, 200);
       } catch (error) {
-        console.log(error);
+        setSpinner(!spin);
       }
     };
     fetchData();
@@ -98,7 +93,7 @@ function OrdersList() {
             <div className="contact-title">
               <h2>
                 {apiErrorMessage}
-                <span style={{ color: "red" }}> ___</span>
+                <span style={{ color: "red" }}></span>
               </h2>
             </div>
           </div>
@@ -122,65 +117,76 @@ function OrdersList() {
                 </tr>
               </thead>
               <tbody>
-                {orders.map((order) => (
-                  <tr className="order-list" key={order.order_id}>
-                    <td>{order.order_id}</td>
+                {spin ? (
+                  orders.map((order) => (
+                    <tr className="order-list" key={order.order_id}>
+                      <td>{order.order_id}</td>
 
-                    <td>
-                      <div>
-                        {" "}
-                        {order.customer_first_name +
-                          " " +
-                          order.customer_last_name}
-                      </div>
-                      <div className="list-email"> {order.customer_email}</div>
-                      <div className="list-email">
-                        {" "}
-                        {order.customer_phone_number}
-                      </div>
-                    </td>
+                      <td>
+                        <div>
+                          {" "}
+                          {order.customer_first_name +
+                            " " +
+                            order.customer_last_name}
+                        </div>
+                        <div className="list-email">
+                          {" "}
+                          {order.customer_email}
+                        </div>
+                        <div className="list-email">
+                          {" "}
+                          {order.customer_phone_number}
+                        </div>
+                      </td>
 
-                    <td>
-                      <div> {order.vehicle_make}</div>
-                      <div className="list-email"> {order.vehicle_year}</div>
-                      <div className="list-email"> {order.vehicle_tag}</div>
-                    </td>
+                      <td>
+                        <div> {order.vehicle_make}</div>
+                        <div className="list-email"> {order.vehicle_year}</div>
+                        <div className="list-email"> {order.vehicle_tag}</div>
+                      </td>
 
-                    <td className="order-date">
-                      {format(new Date(order.order_date), "MM/dd/yyyy")}
-                    </td>
+                      <td className="order-date">
+                        {format(new Date(order.order_date), "MM/dd/yyyy")}
+                      </td>
 
-                    <td>
-                      <div className="order-date">
-                        {" "}
-                        {order.employee_first_name +
-                          " " +
-                          order.employee_last_name}
-                      </div>
-                    </td>
+                      <td>
+                        <div className="order-date">
+                          {" "}
+                          {order.employee_first_name +
+                            " " +
+                            order.employee_last_name}
+                        </div>
+                      </td>
 
-                    <td className="border py-4">
-                      <h6
-                        className={
-                          order.order_status
-                            ? "text-center rounded-pill bg-success font-weight-bold text-white                            "
-                            : "text-center rounded-pill bg-warning font-weight-bold"
-                        }>
-                        {order.order_status ? "Completed" : "In Progress"}
-                      </h6>
-                    </td>
+                      <td className="border py-4">
+                        <h6
+                          className={
+                            order.order_status
+                              ? "text-center rounded-pill bg-success font-weight-bold text-white                            "
+                              : "text-center rounded-pill bg-warning font-weight-bold"
+                          }>
+                          {order.order_status ? "Completed" : "In Progress"}
+                        </h6>
+                      </td>
 
-                    <td className="edit">
-                      <span onClick={() => handleEdit(order.order_hash)} className="hover1">
-                        <FaEdit color="#081336" />
-                      </span>
+                      <td className="edit">
+                        <span
+                          onClick={() => handleEdit(order.order_hash)}
+                          className="hover1">
+                          <FaEdit color="#081336" />
+                        </span>
 
-                      <span onClick={() => handleDetail(order.order_hash)}>
-                        <FaArrowUpRightFromSquare color="#081336" />
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                        <span onClick={() => handleDetail(order.order_hash)}>
+                          <FaArrowUpRightFromSquare color="#081336" />
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <span className="align-text-center">
+                    <BeatLoader color="#081336" size={50} />
+                  </span>
+                )}
               </tbody>
             </Table>
           </div>

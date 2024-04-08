@@ -9,6 +9,7 @@ import { useAuth } from "../../../Context/AuthContext";
 
 // import the login component
 import LoginForm from "../../components/LoginForm/LoginForm";
+import { Link } from "react-router-dom";
 
 function AddEmployee(props) {
   const { isLogged, isAdmin } = useAuth();
@@ -31,26 +32,22 @@ function AddEmployee(props) {
       );
     } else {
       return (
-        <div>
-          <h1 style={{ padding: "100px" }}>
-            You don't have the Permission to access the page you request!
-          </h1>
+        <div class="not-found-container">
+          <div class="not-found-content">
+            <h2>
+              {" "}
+              You don't have the Permission to access the page you request!
+            </h2>
+            <Link class="back-home-link" to="/">
+              <span> Back to Home</span>
+            </Link>
+          </div>
         </div>
       );
     }
   } else {
     return (
       <div>
-        <h5
-          style={{
-            color: "red",
-            paddingLeft: "320px",
-            position: "absolute",
-            top: "300px",
-          }}
-        >
-          You must login frist!
-        </h5>
         <LoginForm />
       </div>
     );

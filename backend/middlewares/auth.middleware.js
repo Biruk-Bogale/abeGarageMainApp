@@ -85,8 +85,7 @@ async function isAdmin_Manager_Employee(req, res, next) {
     next();
   } else if (employee[0].company_role_id === 2) {
     next();
-  }
-  if (employee[0].company_role_id === 1) {
+  } else if (employee[0].company_role_id === 1) {
     next();
   } else {
     return res.status(403).send({

@@ -4,7 +4,6 @@ import loginEmployee from "../../../services/login.services";
 import { BeatLoader } from "react-spinners";
 
 function LoginForm(props) {
-  // const navigate = useNavigate();
   const location = useLocation();
   const [employee_email, setEmail] = useState("");
   const [employee_password, setPassword] = useState("");
@@ -19,8 +18,6 @@ function LoginForm(props) {
   // tracQer
   const emailDom = useRef();
   const passwordDom = useRef();
-
-  // console.log(employee_password);
 
   // email value tracker
   function emailTracker() {
@@ -76,11 +73,8 @@ function LoginForm(props) {
     };
 
     try {
-      const { data } = await loginEmployee(formData);
-
-      // console.log(data.message);
-
       setSpinner(!spin);
+      const { data } = await loginEmployee(formData);
 
       // Save the employee token in the local storage
       if (data.status === "success") {
@@ -103,7 +97,8 @@ function LoginForm(props) {
         }
       }
     } catch (error) {
-      console.log(error.response.data);
+      setSpinner(!spin);
+
       setServerError(error.response.data.message);
       setTimeout(() => {
         setServerError("");

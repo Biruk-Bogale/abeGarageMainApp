@@ -2,8 +2,6 @@ import axios from "../axiosConfig";
 
 // A function to send post request to add a new vehicle
 async function addVehicle(formData, loggedInEmployeeToken) {
-  console.log(formData);
-
   const headers = {
     "x-access-token": loggedInEmployeeToken,
   };
@@ -23,8 +21,6 @@ async function getCustomerVehicle(formData, loggedInEmployeeToken) {
     headers,
   });
 
-  // console.log(data);
-
   return data;
 }
 
@@ -41,8 +37,6 @@ async function getSingleVehicle(
     `/api/vehicle/single/${customer_hash}/${vehicle_id}`,
     { headers }
   );
-
-  // console.log(data);
 
   return data;
 }

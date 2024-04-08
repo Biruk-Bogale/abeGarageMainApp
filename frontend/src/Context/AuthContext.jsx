@@ -53,14 +53,11 @@ function AuthProvider({ children }) {
       // 3 & 2 is the employe role for admin & manager
       if (response.employee_role === 2) {
         setIsAdmin_Manager(true);
-        setIsAdmin(true);
       }
 
       // 3,2 & 1 is the employe role for admin,manager & employee
       if (response.employee_role === 1) {
         setIsAdmin_Manager_employee(true);
-        setIsAdmin_Manager(true);
-        setIsAdmin(true);
       }
 
       //set the whole response on employee

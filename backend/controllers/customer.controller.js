@@ -37,14 +37,17 @@ async function createCustomer(req, res, next) {
           res.status(200).json({ status: "Customer added successfully" });
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         return res.status(400).json({
           error: "Something went wrong!",
         });
       }
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    return res.status(400).json({
+      error: "Something went wrong!",
+    });
   }
 }
 
@@ -64,13 +67,14 @@ async function getAllCustomers(req, res, next) {
       });
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     res.status(404).json({
       error: "Something went wrong!",
     });
   }
 }
 
+// a function to update customer
 async function updateCustomer(req, res, next) {
   // console.log(req.body)
   try {
@@ -97,13 +101,14 @@ async function updateCustomer(req, res, next) {
       });
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     res.status(400).json({
       error: "Something went wrong!",
     });
   }
 }
 
+// a function to get single customer
 async function getsingleCustomer(req, res, next) {
   const customer_hash = req.params.hash;
   // console.log(customer_hash)
@@ -123,13 +128,14 @@ async function getsingleCustomer(req, res, next) {
       });
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     res.status(400).json({
       error: "Something went wrong!",
     });
   }
 }
 
+// a function to get find customer
 async function findCustomer(req, res, next) {
   // console.log(req.query);
   try {
@@ -147,7 +153,7 @@ async function findCustomer(req, res, next) {
       });
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     res.status(400).json({
       error: "Something went wrong!",
     });

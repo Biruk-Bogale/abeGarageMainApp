@@ -15,7 +15,7 @@ const {
 // import the customer controller
 const customerController = require("../controllers/customer.controller");
 
-// create a route to handle the employee request in post
+// create a route to handle the customers request in post
 router.post(
   "/api/customer",
   [verifyToken, isAdmin],
@@ -36,16 +36,17 @@ router.put(
   customerController.updateCustomer
 );
 
-// create a route to handle the get single employee request in get
+// create a route to handle the get single customers request in get
 router.get(
   "/api/customer/single/:hash",
-  [verifyToken, isAdmin_Manager],
+  [verifyToken, isAdmin],
   customerController.getsingleCustomer
 );
 
+// create a route to handle the find customers request in get
 router.get(
   "/api/customer/find",
-  [verifyToken, isAdmin_Manager],
+  [verifyToken, isAdmin],
   customerController.findCustomer
 );
 

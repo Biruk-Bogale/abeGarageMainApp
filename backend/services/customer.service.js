@@ -6,18 +6,22 @@ const crypto = require("crypto");
 
 // A function to check employee existance
 async function checkIfCustomerExists(email) {
-  //   console.log(email);
+  try {
+    //   console.log(email);
 
-  const query = "SELECT * FROM customer_identifier Where customer_email = ?";
+    const query = "SELECT * FROM customer_identifier Where customer_email = ?";
 
-  const rows = await connection.query(query, [email]);
+    const rows = await connection.query(query, [email]);
 
-  // console.log(rows);
+    // console.log(rows);
 
-  if (rows.length > 0) {
-    return true;
-  } else {
-    return false;
+    if (rows.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    // console.log(error);
   }
 }
 
@@ -64,7 +68,7 @@ async function createCustomerr(customer) {
       customer_id: customer_id,
     };
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 
   //  return created customer object
@@ -73,77 +77,92 @@ async function createCustomerr(customer) {
 
 // a Function to get All customers
 async function getAllCustomerss() {
-  const query =
-    "SELECT * FROM customer_identifier INNER JOIN customer_info ON customer_identifier.customer_id = customer_info.customer_id ORDER BY customer_identifier.customer_id DESC";
+  try {
+    const query =
+      "SELECT * FROM customer_identifier INNER JOIN customer_info ON customer_identifier.customer_id = customer_info.customer_id ORDER BY customer_identifier.customer_id DESC";
 
-  const rows = await connection.query(query);
-  // console.log(rows);
+    const rows = await connection.query(query);
+    // console.log(rows);
 
-  return rows;
+    return rows;
+  } catch (error) {
+    // console.log(error)
+  }
 }
 
 async function updateCustomerr(customer) {
-  const customer_hash = customer.customer_hash;
+  try {
+    const customer_hash = customer.customer_hash;
 
-  const query = "SELECT * FROM customer_identifier WHERE customer_hash = ?";
+    const query = "SELECT * FROM customer_identifier WHERE customer_hash = ?";
 
-  const rows = await connection.query(query, [customer_hash]);
+    const rows = await connection.query(query, [customer_hash]);
 
-  // console.log(rows[0].customer_id);
-  const customer_id = rows[0].customer_id;
+    // console.log(rows[0].customer_id);
+    const customer_id = rows[0].customer_id;
 
-  const query1 = `UPDATE customer_identifier SET customer_phone_number = ? WHERE customer_id = ?`;
+    const query1 = `UPDATE customer_identifier SET customer_phone_number = ? WHERE customer_id = ?`;
 
-  const query2 = `UPDATE customer_info SET customer_first_name = ?, customer_last_name = ?, active_customer_status = ? WHERE customer_id = ?`;
+    const query2 = `UPDATE customer_info SET customer_first_name = ?, customer_last_name = ?, active_customer_status = ? WHERE customer_id = ?`;
 
-  const rows1 = await connection.query(query1, [
-    customer.customer_phone,
-    customer_id,
-  ]);
+    const rows1 = await connection.query(query1, [
+      customer.customer_phone,
+      customer_id,
+    ]);
 
-  const rows2 = await connection.query(query2, [
-    customer.customer_first_name,
-    customer.customer_last_name,
-    customer.active_customer,
-    customer_id,
-  ]);
+    const rows2 = await connection.query(query2, [
+      customer.customer_first_name,
+      customer.customer_last_name,
+      customer.active_customer,
+      customer_id,
+    ]);
 
-  // console.log(rows1, rows2);
+    // console.log(rows1, rows2);
 
-  return { rows1, rows2 };
+    return { rows1, rows2 };
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // a function to get single customer
 async function getSingleCustomerr(customer) {
-  const customer_hash = customer;
+  try {
+    const customer_hash = customer;
 
-  const query = "SELECT * FROM customer_identifier WHERE customer_hash = ?";
+    const query = "SELECT * FROM customer_identifier WHERE customer_hash = ?";
 
-  const rows = await connection.query(query, [customer_hash]);
+    const rows = await connection.query(query, [customer_hash]);
 
-  // console.log(rows[0].customer_id);
-  const customer_id = rows[0].customer_id;
+    // console.log(rows[0].customer_id);
+    const customer_id = rows[0].customer_id;
 
-  const query1 = `SELECT * FROM customer_identifier INNER JOIN customer_info ON customer_identifier.customer_id = customer_info.customer_id WHERE customer_identifier.customer_id = ?`;
+    const query1 = `SELECT * FROM customer_identifier INNER JOIN customer_info ON customer_identifier.customer_id = customer_info.customer_id WHERE customer_identifier.customer_id = ?`;
 
-  const rows1 = await connection.query(query1, [customer_id]);
+    const rows1 = await connection.query(query1, [customer_id]);
 
-  // console.log(rows);
+    // console.log(rows);
 
-  return rows1;
+    return rows1;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // find customer with query parameter
 async function findCustomerr(customer) {
   // console.log(customer)
+  try {
+    const query = `SELECT * FROM customer_identifier INNER JOIN customer_info ON customer_identifier.customer_id = customer_info.customer_id WHERE customer_info.customer_first_name LIKE '%${customer.query}%' OR customer_info.customer_last_name LIKE '%${customer.query}%' OR customer_identifier.customer_email LIKE '%${customer.query}%' OR customer_identifier.customer_phone_number LIKE '%${customer.query}%'`;
 
-  const query = `SELECT * FROM customer_identifier INNER JOIN customer_info ON customer_identifier.customer_id = customer_info.customer_id WHERE customer_info.customer_first_name LIKE '%${customer.query}%' OR customer_info.customer_last_name LIKE '%${customer.query}%' OR customer_identifier.customer_email LIKE '%${customer.query}%' OR customer_identifier.customer_phone_number LIKE '%${customer.query}%'`;
+    const rows = await connection.query(query);
 
-  const rows = await connection.query(query);
+    console.log(rows);
 
-  console.log(rows)
-
-  return rows;
+    return rows;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 module.exports = {

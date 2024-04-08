@@ -14,30 +14,20 @@ function Admin(props) {
   const { isLogged, isAdmin } = useAuth();
 
   if (isLogged) {
-    if (isAdmin) {
-      return (
-        <div>
-          <div className="container-fluid admin-pages">
-            <div className="row">
-              <div className="col-md-3 admin-left-side">
-                <AdminMenu />
-              </div>
-              <div className="col-md-9 admin-right-side">
-                <AdminDashboard />
-              </div>
+    return (
+      <div>
+        <div className="container-fluid admin-pages">
+          <div className="row">
+            <div className="col-md-3 admin-left-side">
+              <AdminMenu />
+            </div>
+            <div className="col-md-9 admin-right-side">
+              <AdminDashboard />
             </div>
           </div>
         </div>
-      );
-    } else {
-      return (
-        <div>
-          <h1 style={{ padding: "100px" }}>
-            You don't have the Permission to access the page you request!
-          </h1>
-        </div>
-      );
-    }
+      </div>
+    );
   } else {
     return (
       <div>
@@ -47,8 +37,7 @@ function Admin(props) {
             paddingLeft: "320px",
             position: "absolute",
             top: "300px",
-          }}
-        >
+          }}>
           You must login frist!
         </h5>
         <LoginForm />

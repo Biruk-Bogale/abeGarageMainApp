@@ -10,6 +10,7 @@ import LoginForm from "../../components/LoginForm/LoginForm";
 import AdminMenu from "../../components/Admin/AdminMenu/AdminMenu";
 
 import EmployeesList from "../../components/Admin/EmployeesList/EmployeesList";
+import { Link } from "react-router-dom";
 
 function Employees() {
   const { isLogged, isAdmin_manager, isAdmin } = useAuth();
@@ -34,10 +35,16 @@ function Employees() {
       );
     } else {
       return (
-        <div>
-          <h1 style={{ padding: "100px" }}>
-            You don't have the Permission to access the page you request!
-          </h1>
+        <div class="not-found-container">
+          <div class="not-found-content">
+            <h2>
+              {" "}
+              You don't have the Permission to access the page you request!
+            </h2>
+            <Link class="back-home-link" to="/">
+              <span> Back to Home</span>
+            </Link>
+          </div>
         </div>
       );
     }

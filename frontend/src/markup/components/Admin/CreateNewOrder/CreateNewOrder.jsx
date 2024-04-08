@@ -8,7 +8,9 @@ import vehicleService from "../../../../services/vehicle.services";
 import SERVICE from "../../../../services/service.services";
 import Order from "../../../../services/order.services";
 
-import { FaEdit, FaGlideG } from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
+
+import { BeatLoader } from "react-spinners";
 
 // import the useAuth hook
 import { useAuth } from "../../../../Context/AuthContext";
@@ -30,9 +32,13 @@ function CreateNewOrder() {
   const [order_completed, setorder_completed] = useState(0);
 
   const [serverMsg, setServerMsg] = useState("");
+  const [serverMsg1, setServerMsg1] = useState("");
 
   // get the customer id
   const customer_id = customer1.customer_id;
+
+  // spinner handler state
+  const [spin, setSpinner] = useState(false);
 
   // target
   const setAdditionalRequestDom = useRef();
@@ -73,34 +79,7 @@ function CreateNewOrder() {
     setestimated_completion_date(estimated_completion_dateDom.current.value);
   }
 
-  // console.log(estimated_completion_date);
-
-  // console.log(selectedServices, "fff");
-  // console.log(customer_id);
-
-  // const order_services = [{ service_id: selectedServices }];
-  // console.log(order_services);
-
   const { customer_hash, vehicle_id } = useParams();
-
-  // // Function to handle service checkbox selection
-  // function handleServiceSelect(serviceId, isChecked) {
-  //   if (isChecked) {
-  //     setSelectedServices([...selectedServices, serviceId]);
-  //     // console.log(...selectedServices, "trueee");
-  //   } else {
-  //     setSelectedServices(
-  //       selectedServices.filter((id) => (
-  //         console.log(id),
-
-  //         console.log(serviceId),
-
-  //         id !== serviceId
-  //       ))
-  //     );
-  //     // console.log(selectedServices, "flaseee");
-  //   }
-  // }
 
   // Function to handle checkbox selection
 
@@ -108,19 +87,9 @@ function CreateNewOrder() {
     if (isChecked) {
       setSelectedServices([...selectedServices, serviceId]);
     } else {
-      setSelectedServices(
-        selectedServices.filter(
-          (id) =>
-            // (console.log(id)), 1,2
-
-            // (console.log(serviceId)), 2
-
-            id !== serviceId
-        )
-      );
+      setSelectedServices(selectedServices.filter((id) => id !== serviceId));
     }
   };
-  // console.log(selectedServices)
 
   // create a variable to hold the users token
   let loggedInEmployeeToken = "";
@@ -129,15 +98,12 @@ function CreateNewOrder() {
 
   const employee_id = employee.employee_id;
 
-  // console.log(employee.employee_id);
-
   if (employee && employee.employee_token) {
     loggedInEmployeeToken = employee.employee_token;
   }
 
   //afunction to fetch customer data
   const fetchData1 = async () => {
-    // console.log(formData);
     try {
       const data = await customerService?.singleCustomer(
         customer_hash,
@@ -145,8 +111,6 @@ function CreateNewOrder() {
       );
 
       setCustomer1(data.data.singleCustomer[0]);
-
-      // console.log(checkboxDOM.current.checked);
     } catch (error) {
       console.log(error);
     }
@@ -162,10 +126,7 @@ function CreateNewOrder() {
         loggedInEmployeeToken
       );
 
-      // console.log(data.data.SingleVehicle[0]);
       setVehicle1(data.data.SingleVehicle[0]);
-
-      // console.log(checkboxDOM.current.checked);
     } catch (error) {
       console.log(error);
     }
@@ -176,10 +137,7 @@ function CreateNewOrder() {
     try {
       const data = await SERVICE.getAllServices(loggedInEmployeeToken);
 
-      // console.log(data.data.services);
       setServices(data.data.services);
-
-      // setVehicleError("");
     } catch (error) {
       console.log(error);
     }
@@ -214,28 +172,28 @@ function CreateNewOrder() {
       })),
     };
 
-    // console.log(formData);
-
     try {
+      setSpinner(true);
       const data = await Order.addOrder(formData, loggedInEmployeeToken);
 
-      setServerMsg("");
+      if (data.status === 200) {
+        setServerMsg1(data.data.status + " Redirecting Page...");
+        setServerMsg("");
 
-      console.log(data.response, "kjhgf");
-
-      // console.log("ooooooooooooooooooooooobject");
-
-      if (data.statusText == "OK") {
-        navigate("/admin/orders");
+        setTimeout(() => {
+          setSpinner(false);
+          setServerMsg1("");
+          navigate("/admin/orders");
+        }, 2000);
       }
-
-      // console.log(data.statusText);
     } catch (error) {
       // console.log(error.response.data.error);
       setServerMsg(error.response.data.error);
+      setServerMsg1("");
 
       setTimeout(() => {
         setServerMsg("");
+        setSpinner(false);
       }, 2000);
     }
   }
@@ -299,8 +257,7 @@ function CreateNewOrder() {
                 </span>
                 <span>
                   <Link
-                    to={`/admin/customer-update/${customer1.customer_hash}`}
-                  >
+                    to={`/admin/customer-update/${customer1.customer_hash}`}>
                     <FaEdit color="#081336" />
                   </Link>
                 </span>
@@ -387,8 +344,7 @@ function CreateNewOrder() {
                   <>
                     <div
                       key={i}
-                      className="bg-white Regular shadow my-2 d-flex "
-                    >
+                      className="bg-white Regular shadow my-2 d-flex ">
                       <div className="py-4 pb-1 px-4 flex-grow-1 ">
                         <h5 className="mb-1 font-weight-bold ">
                           {service.service_name}
@@ -459,8 +415,7 @@ function CreateNewOrder() {
                         ref={setAdditionalRequestDom}
                         onChange={additionalRequestTracker}
                         value={additional_request}
-                        required
-                      ></textarea>
+                        required></textarea>
                     </div>
 
                     <h3 className="ml-3">Notes For Internal Use</h3>
@@ -535,7 +490,13 @@ function CreateNewOrder() {
 
                     <div className="form-group col-md-12 pl-3">
                       <button className="theme-btn btn-style-one" type="submit">
-                        <span>ADD SERVICE</span>
+                        <span>
+                          {spin ? (
+                            <BeatLoader color="white" size={8} />
+                          ) : (
+                            "ADD SERVICE"
+                          )}
+                        </span>
                       </button>
 
                       {serverMsg && (
@@ -547,9 +508,22 @@ function CreateNewOrder() {
                             fontWeight: "600",
                             padding: "25px",
                           }}
-                          role="alert"
-                        >
+                          role="alert">
                           {serverMsg}
+                        </div>
+                      )}
+
+                      {serverMsg1 && (
+                        <div
+                          className="validation-error"
+                          style={{
+                            color: "green",
+                            fontSize: "100%",
+                            fontWeight: "600",
+                            padding: "25px",
+                          }}
+                          role="alert">
+                          {serverMsg1}
                         </div>
                       )}
                     </div>

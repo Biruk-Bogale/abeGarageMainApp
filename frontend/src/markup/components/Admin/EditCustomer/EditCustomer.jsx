@@ -17,14 +17,12 @@ function EditCustomer() {
   const [customer_phone, setPhoneNumber] = useState("");
   const [active_customer, setActiveCustomer] = useState("");
   const [customer1, setCustomer1] = useState("");
+  const [serverMsg, setServerMsg] = useState("");
 
   const { customer_hash } = useParams();
-  // console.log(customer_hash);
 
-  // console.log(employee_first_name);
-  // console.log(employee_last_name);
-  // console.log(employee_phone);
-  // console.log(company_role_id);
+  // spinner handler state
+  const [spin, setSpinner] = useState(false);
 
   // traget
   const firstNameDom = useRef();
@@ -32,10 +30,9 @@ function EditCustomer() {
   const phoneNumberDom = useRef();
   const checkboxDOM = useRef();
 
-  // console.log(checkboxDOM.current)
-
   // create a variable to hold the users token
   let loggedInEmployeeToken = "";
+
   // destructure the auth hook and get the token
   const { employee } = useAuth();
   if (employee && employee.employee_token) {
@@ -65,16 +62,13 @@ function EditCustomer() {
   // fetch employee data using useEffect
   useEffect(() => {
     const fetchData = async () => {
-      // console.log(formData);
       try {
         const data = await customerService?.singleCustomer(
           customer_hash,
           loggedInEmployeeToken
         );
 
-        console.log(data.data.singleCustomer[0]);
-
-        if (data?.statusText !== "OK") {
+        if (data?.status !== 200) {
           // set apiError to true
           setApiError(true);
 
@@ -94,10 +88,8 @@ function EditCustomer() {
         checkboxDOM.current.checked =
           data.data.singleCustomer[0].active_customer_status;
         setActiveCustomer(checkboxDOM.current.checked);
-
-        // console.log(checkboxDOM.current.checked);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 
@@ -119,15 +111,25 @@ function EditCustomer() {
     };
 
     try {
+      setSpinner(!spin);
       const data = await customerService.updateCustomer(
         FormData,
         loggedInEmployeeToken
       );
 
-      // alert("grooddddddddddddddddddddddd");
-      navigate("/admin/customers");
+      if (data.status === 200) {
+        setServerMsg("Redirecting To Customers page...");
+
+        setTimeout(() => {
+          setSpinner(!spin);
+          setServerMsg("");
+          navigate("/admin/customers");
+        }, 500);
+      }
     } catch (error) {
-      console.log(error);
+      setTimeout(() => {
+        setSpinner(!spin);
+      }, 500);
     }
   }
 
@@ -219,17 +221,16 @@ function EditCustomer() {
                           // onClick={spinner}
                           className="theme-btn btn-style-one"
                           type="submit"
-                          data-loading-text="Please wait..."
-                        >
+                          data-loading-text="Please wait...">
                           <span>
-                            {!"spin" ? (
+                            {spin ? (
                               <BeatLoader color="white" size={8} />
                             ) : (
                               "Update Customer"
                             )}
                           </span>
                         </button>
-                        {"serverMsg" && (
+                        {serverMsg && (
                           <div
                             className="validation-error"
                             style={{
@@ -238,9 +239,8 @@ function EditCustomer() {
                               fontWeight: "600",
                               padding: "25px",
                             }}
-                            role="alert"
-                          >
-                            {/* {serverMsg} */}
+                            role="alert">
+                            {serverMsg}
                           </div>
                         )}
                       </div>

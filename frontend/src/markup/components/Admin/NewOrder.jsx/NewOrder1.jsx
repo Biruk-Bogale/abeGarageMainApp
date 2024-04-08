@@ -24,9 +24,6 @@ function NewOrder1() {
   const [query, setQuery] = useState("");
   const [noData, setNoData] = useState();
 
-  // console.log(query);
-  console.log(customers);
-
   //targeter
   const queryDom = useRef();
 
@@ -130,19 +127,6 @@ function NewOrder1() {
                       )}
                     </span>
                   </h1>
-                  {"serverMsg" && (
-                    <div
-                      className="validation-error"
-                      style={{
-                        color: "green",
-                        fontSize: "100%",
-                        fontWeight: "600",
-                        padding: "25px",
-                      }}
-                      role="alert">
-                      {/* {serverMsg} */}
-                    </div>
-                  )}
                 </div>
               </div>
             </form>

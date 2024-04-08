@@ -11,12 +11,9 @@ const jwtSecret = process.env.JWT_SECRET;
 async function logIn(req, res, next) {
   try {
     const employeeData = req.body;
-    // console.log(employeeData);
 
     // call the logIn method from the login service
     const employee = await logInService.logIn(employeeData);
-
-    // console.log(employee.status);
 
     // if the employee is not found
     if (employee.status === "fail") {
@@ -34,13 +31,9 @@ async function logIn(req, res, next) {
       employee_first_name: employee.employee.employee_first_name,
     };
 
-    // console.log(payload);
-
     const token = jwt.sign(payload, jwtSecret, {
       expiresIn: "24h",
     });
-
-    // console.log(token);
 
     const sendBack = {
       employee_token: token,
@@ -52,7 +45,9 @@ async function logIn(req, res, next) {
       data: sendBack,
     });
   } catch (error) {
-    console.log(error);
+    res.status(400).json({
+      error: "Something went wrong!",
+    });
   }
 }
 

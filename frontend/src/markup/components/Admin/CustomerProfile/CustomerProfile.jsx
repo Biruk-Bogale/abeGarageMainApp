@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { BeatLoader } from "react-spinners";
 
-import { Table, Button } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 
 // import services
 import vehicleService from "../../../../services/vehicle.services";
@@ -29,6 +29,7 @@ function CustomerProfile() {
   const [vehicle1, setVehicle1] = useState([]);
   const [order1, setOrder1] = useState([]);
   const [showHide, setShowHide] = useState(false);
+  const [serverMsg, setServerMsg] = useState("");
 
   const [vehicle_year, setVehicleYear] = useState("");
   const [vehicle_make, setVehicleMake] = useState("");
@@ -47,8 +48,11 @@ function CustomerProfile() {
     setShowHide(!showHide);
   }
 
+  // spinner handler state
+  const [spin, setSpinner] = useState(false);
+  const [spin2, setSpinner2] = useState(false);
+
   const { customer_hash } = useParams();
-  // console.log(customer_hash);
 
   // traget
   const vehicleYearDom = useRef();
@@ -115,17 +119,17 @@ function CustomerProfile() {
   function handleDetail(id) {
     navigate(`/orders/order-detail/${id}`);
   }
+  function handleOrder(id) {
+    navigate(`/admin/order/add-new-order/${id}`);
+  }
 
   //afunction to fetch customer data
   const fetchData1 = async () => {
-    // console.log(formData);
     try {
       const data = await customerService?.singleCustomer(
         customer_hash,
         loggedInEmployeeToken
       );
-
-      // console.log(data.data.singleCustomer[0]);
 
       if (data?.statusText !== "OK") {
         // set apiError to true
@@ -141,10 +145,8 @@ function CustomerProfile() {
       }
 
       setCustomer1(data.data.singleCustomer[0]);
-
-      // console.log(checkboxDOM.current.checked);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 
@@ -155,10 +157,15 @@ function CustomerProfile() {
         customer_hash,
         loggedInEmployeeToken
       );
-      setVehicle1(data2.data.customerVehicle);
+
+      if (data2.status === 200) {
+        setSpinner(!spin);
+        setVehicle1(data2.data.customerVehicle);
+      }
+
       setVehicleError("");
     } catch (error) {
-      // console.log(error.response.data.error);
+      setSpinner(!spin);
       setVehicle1([]);
       setVehicleError(error.response.data.error);
     }
@@ -181,12 +188,14 @@ function CustomerProfile() {
         loggedInEmployeeToken
       );
 
-      console.log(data2.data.customerOrder);
+      if (data2.status === 200) {
+        setSpinner2(!spin2);
+        setOrder1(data2.data.customerOrder);
+      }
 
-      setOrder1(data2.data.customerOrder);
       setOrderError("");
     } catch (error) {
-      // console.log(error.response.data.error);
+      setSpinner2(!spin2);
       setOrder1([]);
       setOrderError(error.response.data.error);
     }
@@ -222,19 +231,17 @@ function CustomerProfile() {
         loggedInEmployeeToken
       );
 
+      console.log(data);
+
       fetchData2();
       setShowHide(!showHide);
-
-      //   alert("grooddddddddddddddddddddddd");
-      // navigate(`/admin/customer-profile/${customer_hash}`);
-      // window.location.reload();
     } catch (error) {
-      console.log(error);
-    }
-  }
+      setServerMsg(error.response.data.msg);
 
-  function handleAdd(id) {
-    navigate(`/admin/order/add-new-order/${id}`);
+      setTimeout(() => {
+        setServerMsg("");
+      }, 2000);
+    }
   }
 
   return (
@@ -244,12 +251,10 @@ function CustomerProfile() {
           {/* Customer Info */}
           <div
             className=" ml-5 pb-4  d-flex order-danger "
-            style={{ borderLeft: "2px solid red" }}
-          >
+            style={{ borderLeft: "2px solid red" }}>
             <div
               className="ml-n5 bg-danger text-center d-flex align-items-center justify-content-center rounded-circle text-white font-weight-bolder"
-              style={{ width: "90px", height: "90px" }}
-            >
+              style={{ width: "90px", height: "90px" }}>
               Info
             </div>
             <div className=" ml-4 p-3 flex-grow-1">
@@ -291,8 +296,7 @@ function CustomerProfile() {
                 </span>
                 <span>
                   <Link
-                    to={`/admin/customer-update/${customer1.customer_hash}`}
-                  >
+                    to={`/admin/customer-update/${customer1.customer_hash}`}>
                     <FaEdit color="#081336" />
                   </Link>
                 </span>
@@ -304,12 +308,10 @@ function CustomerProfile() {
           <div className="d-flex">
             <div
               className=" pb-5 ml-5 d-flex "
-              style={{ borderLeft: "2px solid red" }}
-            >
+              style={{ borderLeft: "2px solid red" }}>
               <div
                 className="ml-n5 bg-danger text-center d-flex align-items-center justify-content-center rounded-circle text-white font-weight-bolder"
-                style={{ width: "90px", height: "90px" }}
-              >
+                style={{ width: "90px", height: "90px" }}>
                 Cars
               </div>
             </div>
@@ -324,6 +326,8 @@ function CustomerProfile() {
                   </h4>
                 </div>
                 <div className=" bg-white px-2 py-1 ">
+                  {}
+
                   {vehicle1.length ? (
                     <Table striped bordered hover>
                       <thead>
@@ -353,10 +357,12 @@ function CustomerProfile() {
                         ))}
                       </tbody>
                     </Table>
-                  ) : (
+                  ) : spin ? (
                     <div className="NoVehicle">
                       <h2> {vehicle_error}</h2>
                     </div>
+                  ) : (
+                    <BeatLoader color="#081336" size={70} />
                   )}
                 </div>
               </div>
@@ -365,8 +371,7 @@ function CustomerProfile() {
                   <div
                     onClick={Show}
                     className=" rounded-circle d-flex justify-content-center align-items-center "
-                    style={{ height: "25px", width: "25px" }}
-                  >
+                    style={{ height: "25px", width: "25px" }}>
                     <span>
                       {showHide ? (
                         <GiCrossedBones size={40} color="#C91236" />
@@ -506,28 +511,20 @@ function CustomerProfile() {
                               // onClick={spinner}
                               className="theme-btn btn-style-one"
                               type="submit"
-                              data-loading-text="Please wait..."
-                            >
-                              <span>
-                                {!"spin" ? (
-                                  <BeatLoader color="white" size={8} />
-                                ) : (
-                                  "Add Vehicle"
-                                )}
-                              </span>
+                              data-loading-text="Please wait...">
+                              <span>Add Vehicle</span>
                             </button>
-                            {"serverMsg" && (
+                            {serverMsg && (
                               <div
                                 className="validation-error"
                                 style={{
-                                  color: "green",
+                                  color: "red",
                                   fontSize: "100%",
                                   fontWeight: "600",
                                   padding: "25px",
                                 }}
-                                role="alert"
-                              >
-                                {/* {serverMsg} */}
+                                role="alert">
+                                {serverMsg}
                               </div>
                             )}
                           </div>
@@ -546,12 +543,10 @@ function CustomerProfile() {
           <div className="d-flex">
             <div
               className=" pb-5 ml-5 d-flex "
-              style={{ borderLeft: "2px solid red" }}
-            >
+              style={{ borderLeft: "2px solid red" }}>
               <div
                 className="ml-n5 bg-danger text-center d-flex align-items-center justify-content-center rounded-circle text-white font-weight-bolder"
-                style={{ width: "90px", height: "90px" }}
-              >
+                style={{ width: "90px", height: "90px" }}>
                 Orders
               </div>
             </div>
@@ -566,7 +561,7 @@ function CustomerProfile() {
                   </h4>
                 </div>
                 <div className=" bg-white px-2 py-1 ">
-                  {vehicle1.length ? (
+                  {order1.length ? (
                     <Table striped bordered hover>
                       <thead>
                         <tr>
@@ -592,8 +587,7 @@ function CustomerProfile() {
                                   order.order_status
                                     ? "text-center rounded-pill bg-success font-weight-bold text-white                            "
                                     : "text-center rounded-pill bg-warning font-weight-bold"
-                                }
-                              >
+                                }>
                                 {order.order_status
                                   ? "Completed"
                                   : "In Progress"}
@@ -603,14 +597,12 @@ function CustomerProfile() {
                             <td className="edit">
                               <span
                                 onClick={() => handleEdit(order?.order_hash)}
-                                className="hover1"
-                              >
+                                className="hover1">
                                 <FaEdit color="#081336" />
                               </span>
 
                               <span
-                                onClick={() => handleDetail(order?.order_hash)}
-                              >
+                                onClick={() => handleDetail(order?.order_hash)}>
                                 <FaArrowUpRightFromSquare color="#081336" />
                               </span>
                             </td>
@@ -618,26 +610,23 @@ function CustomerProfile() {
                         ))}
                       </tbody>
                     </Table>
-                  ) : (
+                  ) : spin2 ? (
                     <div className="NoVehicle">
                       <h2> {order_error}</h2>
                     </div>
+                  ) : (
+                    <BeatLoader color="#081336" size={70} />
                   )}
                 </div>
               </div>
               <div className="mt-2" style={{ widows: "85%" }}>
                 <div className="pt-2 pb-3 d-flex justify-content-start">
                   <div
-                    onClick={Show}
+                    onClick={() => handleOrder(customer_hash)}
                     className=" rounded-circle d-flex justify-content-center align-items-center "
-                    style={{ height: "25px", width: "25px" }}
-                  >
+                    style={{ height: "25px", width: "25px" }}>
                     <span>
-                      {showHide ? (
-                        <GiCrossedBones size={40} color="#C91236" />
-                      ) : (
-                        <FaCirclePlus size={40} color="#222B48" />
-                      )}
+                      <FaCirclePlus size={40} color="#222B48" />
                     </span>
                   </div>
                 </div>

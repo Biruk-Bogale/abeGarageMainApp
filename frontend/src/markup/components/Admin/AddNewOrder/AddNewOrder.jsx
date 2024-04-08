@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 
-import { Table, Button } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 
-import { useParams, useNavigate, Link, Navigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 
+import { BeatLoader } from "react-spinners";
 import { FaEdit } from "react-icons/fa";
 import { FaHandPointer } from "react-icons/fa";
 
@@ -18,9 +19,12 @@ function AddNewOrder() {
   const navigate = useNavigate();
   const [customer1, setCustomer1] = useState("");
   const [vehicle1, setVehicle1] = useState([]);
+  const [vehicle_error, setVehicle_Error] = useState([]);
 
   const { customer_hash } = useParams();
-  //   console.log(customer_hash);
+
+  // spinner handler state
+  const [spin, setSpinner] = useState(false);
 
   // create a variable to hold the users token
   let loggedInEmployeeToken = "";
@@ -32,18 +36,13 @@ function AddNewOrder() {
 
   // afunction to fetch customer data
   const fetchData1 = async () => {
-    // console.log(formData);
     try {
       const data = await customerService.singleCustomer(
         customer_hash,
         loggedInEmployeeToken
       );
 
-      console.log(data.data.singleCustomer[0]);
-
       setCustomer1(data.data.singleCustomer[0]);
-
-      // console.log(checkboxDOM.current.checked);
     } catch (error) {
       console.log(error);
     }
@@ -58,9 +57,13 @@ function AddNewOrder() {
       );
       setVehicle1(data2.data.customerVehicle);
 
-      console.log(data2);
+      setTimeout(() => {
+        setSpinner(!spin);
+      }, 200);
     } catch (error) {
-      console.log(error.response.data.error);
+      console.log();
+      setVehicle_Error(error.response.data.error);
+      setSpinner(!spin);
     }
   };
 
@@ -155,7 +158,7 @@ function AddNewOrder() {
                 </h4>
               </div>
               <div className=" bg-white px-2 py-1 ">
-                {"vehicle1?.length " ? (
+                {vehicle1?.length ? (
                   <Table striped bordered hover>
                     <thead>
                       <tr>
@@ -171,35 +174,41 @@ function AddNewOrder() {
                       </tr>
                     </thead>
                     <tbody>
-                      {vehicle1.map((vehicle) => (
-                        <tr key={vehicle.id}>
-                          <td>{vehicle.vehicle_year}</td>
-                          <td>{vehicle.vehicle_make}</td>
-                          <td>{vehicle.vehicle_model}</td>
-                          <td>{vehicle.vehicle_type}</td>
-                          <td>{vehicle.vehicle_mileage}</td>
-                          <td>{vehicle.vehicle_tag}</td>
-                          <td>{vehicle.vehicle_serial}</td>
-                          <td>{vehicle.vehicle_color}</td>
-                          <td>
-                            <span
-                              onClick={() =>
-                                handleChoose(
-                                  customer1.customer_hash,
-                                  vehicle.vehicle_id
-                                )
-                              }
-                              className="hover1">
-                              <FaHandPointer color="#081336" />
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
+                      {spin ? (
+                        vehicle1.map((vehicle) => (
+                          <tr key={vehicle.id}>
+                            <td>{vehicle.vehicle_year}</td>
+                            <td>{vehicle.vehicle_make}</td>
+                            <td>{vehicle.vehicle_model}</td>
+                            <td>{vehicle.vehicle_type}</td>
+                            <td>{vehicle.vehicle_mileage}</td>
+                            <td>{vehicle.vehicle_tag}</td>
+                            <td>{vehicle.vehicle_serial}</td>
+                            <td>{vehicle.vehicle_color}</td>
+                            <td>
+                              <span
+                                onClick={() =>
+                                  handleChoose(
+                                    customer1.customer_hash,
+                                    vehicle.vehicle_id
+                                  )
+                                }
+                                className="hover1">
+                                <FaHandPointer color="#081336" />
+                              </span>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <span className="align-text-center">
+                          <BeatLoader color="#081336" size={30} />
+                        </span>
+                      )}
                     </tbody>
                   </Table>
                 ) : (
                   <div className="NoVehicle">
-                    <h2> {"vehicle_error"}</h2>
+                    <h2> {vehicle_error}</h2>
                   </div>
                 )}
               </div>

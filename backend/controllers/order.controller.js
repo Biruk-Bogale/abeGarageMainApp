@@ -26,7 +26,6 @@ async function createOrder(req, res, next) {
       res.status(200).json({ status: "Order added successfully" });
     }
   } catch (error) {
-    console.log(error);
     res.status(404).json({
       error: "Something went wrong!",
     });
@@ -36,8 +35,6 @@ async function createOrder(req, res, next) {
 async function getAllOrders(req, res, next) {
   try {
     const AllOrders = await getAllOrderss();
-
-    // console.log(AllOrders)
 
     if (!AllOrders) {
       res.status(400).json({
@@ -53,12 +50,7 @@ async function getAllOrders(req, res, next) {
         Orders: AllOrders,
       });
     }
-  } catch (error) {
-    console.log(error);
-    res.status(404).json({
-      error: "Something went wrong!",
-    });
-  }
+  } catch (error) {}
 }
 
 async function getsingleOrder(req, res, next) {
@@ -66,8 +58,6 @@ async function getsingleOrder(req, res, next) {
 
   try {
     const singleOrder = await getsingleOrderr(service_hash);
-
-    // console.log(singleOrder)
 
     if (!singleOrder[0]?.order_id) {
       res.status(400).json({
@@ -79,24 +69,36 @@ async function getsingleOrder(req, res, next) {
         singleOrder: singleOrder,
       });
     }
-  } catch (error) {}
+  } catch (error) {
+    res.status(404).json({
+      error: "Something went wrong!",
+    });
+  }
 }
 
 async function updateorder(req, res, next) {
-  // console.log(req.body);
-
   try {
     const updateOrder = updateOrderr(req.body);
+
+    if (!updateOrder) {
+      res.status(400).json({
+        error: "Failed to Update the Order!",
+      });
+    } else {
+      res.status(200).json({
+        status: "Order Updated successfully! ",
+      });
+    }
   } catch (error) {
-    console.log(error);
+    res.status(404).json({
+      error: "Something went wrong!",
+    });
   }
 }
 
 async function customerOrders(req, res, next) {
   try {
     const customerOrder = await customerOrderss(req.params.hash);
-
-    // console.log(customerOrder.length);
 
     if (!customerOrder.length) {
       return res.status(400).json({
@@ -109,7 +111,9 @@ async function customerOrders(req, res, next) {
       });
     }
   } catch (error) {
-    console.log(error);
+    res.status(404).json({
+      error: "Something went wrong!",
+    });
   }
 }
 

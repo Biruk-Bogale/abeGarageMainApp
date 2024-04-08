@@ -1,6 +1,8 @@
 import React, { useState, useRef } from "react";
 import customerService from "../../../../services/customer.services";
 
+import { BeatLoader } from "react-spinners";
+
 import { useNavigate } from "react-router-dom";
 
 // import the useAuth hook
@@ -14,17 +16,17 @@ function AddCustomerForm() {
   const [customer_last_name, setLastName] = useState("");
   const [customer_phone, setPhoneNumber] = useState("");
   const [active_customer, setActive_customer] = useState(1);
+  const [serverMsg, setServerMsg] = useState("");
 
-  // console.log(customer_email);
-  // console.log(customer_first_name);
-  // console.log(customer_last_name);
-  // console.log(customer_phone);
+  // spinner handler state
+  const [spin, setSpinner] = useState(false);
 
   // Error
   const [emailError, setEmailError] = useState("");
 
   // create a variable to hold the users token
   let loggedInEmployeeToken = "";
+
   // destructure the auth hook and get the token
   const { employee } = useAuth();
   if (employee && employee.employee_token) {
@@ -92,8 +94,21 @@ function AddCustomerForm() {
         formData,
         loggedInEmployeeToken
       );
+
       // console.log(data);
-      navigate("/admin/customers");
+
+      if (data.status === 200) {
+        setServerMsg("Redirecting To Customers page...");
+        setSpinner(!spin);
+
+        setTimeout(() => {
+          setSpinner(!spin);
+          setServerMsg("");
+          navigate("/admin/customers");
+        }, 500);
+      }
+
+      // if()
     } catch (error) {
       // console.log(error.response.data.msg);
 
@@ -179,18 +194,18 @@ function AddCustomerForm() {
                     {/* Submit Button */}
                     <div className="form-group col-md-12">
                       <button
-                        // onClick={spinner}
                         className="theme-btn btn-style-one"
                         type="submit"
-                        data-loading-text="Please wait..."
-                      >
+                        data-loading-text="Please wait...">
                         <span>
-                          {!"spin"
-                            ? "" // <BeatLoader color="white" size={8} />
-                            : "Add Customer"}
+                          {spin ? (
+                            <BeatLoader color="white" size={8} />
+                          ) : (
+                            "Add Customer"
+                          )}
                         </span>
                       </button>
-                      {"serverMsg" && (
+                      {serverMsg && (
                         <div
                           className="validation-error"
                           style={{
@@ -199,9 +214,8 @@ function AddCustomerForm() {
                             fontWeight: "600",
                             padding: "25px",
                           }}
-                          role="alert"
-                        >
-                          {/* {serverMsg} */}
+                          role="alert">
+                          {serverMsg}
                         </div>
                       )}
                     </div>

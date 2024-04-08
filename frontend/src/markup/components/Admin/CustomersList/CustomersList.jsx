@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
 
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // import recat components
-import { Table, Button } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 
 // import react icons
 import { FaEdit } from "react-icons/fa";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 
+import { BeatLoader } from "react-spinners";
+
 // import the auth hook
 import { useAuth } from "../../../../Context/AuthContext";
-
-// import the employee service to use the get employees function
-import cutomerService from "../../../../services/customer.services";
 
 // import the date-fns library
 import { format } from "date-fns";
@@ -24,14 +23,10 @@ function CustomersList() {
   //  employees state to store the emplooyes data
   const [customers, setCustomers] = useState([]);
 
-  // console.log(customers);
-
-  // console.log(employees);
-  // const { id } = useParams();
-
   const navigate = useNavigate();
 
-  // console.log(employees[0].employee_id)
+  // spinner handler state
+  const [spin, setSpinner] = useState(false);
 
   // to serve as aflag to show the error message
   const [apiError, setApiError] = useState(false);
@@ -47,16 +42,14 @@ function CustomersList() {
   if (employee) {
     token = employee?.employee_token;
   }
-  //   console.log(employee?.employee_token)
 
   // fetch employees data using useEffect
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await customerService?.getAllCustomers(token);
-        // console.log(data);
 
-        if (data?.statusText !== "OK") {
+        if (data?.status !== 200) {
           // set apiError to true
           setApiError(true);
 
@@ -72,7 +65,9 @@ function CustomersList() {
         // // set customers data
         setCustomers(data?.data?.customers);
 
-        // console.log(data?.data?.customers);
+        setTimeout(() => {
+          setSpinner(!spin);
+        }, 200);
       } catch (error) {
         // console.log(error);
       }
@@ -95,7 +90,7 @@ function CustomersList() {
           <div className="auto-container">
             <div className="contact-title">
               <h2>
-                {"apiErrorMessage"}
+                {apiErrorMessage}
                 <span style={{ color: "red" }}> ___</span>
               </h2>
             </div>
@@ -107,6 +102,7 @@ function CustomersList() {
             <div className="contact-title">
               <h2>Customers</h2>
             </div>
+
             <Table striped bordered hover>
               <thead>
                 <tr>
@@ -121,43 +117,46 @@ function CustomersList() {
                 </tr>
               </thead>
               <tbody>
-                {customers.map((customer) => (
-                  <tr
-                    className={
-                      !customer.active_customer_status
-                        ? `${"inactive"}`
-                        : `${"active"}`
-                    }
-                    key={customer.customer_id}
-                  >
-                    <td>{customer.customer_id}</td>
-                    <td>{customer.customer_first_name}</td>
-                    <td>{customer.customer_last_name}</td>
-                    <td>{customer.customer_email}</td>
-                    <td>{customer.customer_phone_number}</td>
-                    <td>
-                      {format(
-                        new Date(customer.customer_added_date),
-                        "MM - dd - yyyy | kk:mm"
-                      )}
-                    </td>
-                    <td>{customer.active_customer_status ? "Yes" : "No"}</td>
-                    <td className="edit">
-                      <span
-                        onClick={() => handleEdit(customer.customer_hash)}
-                        className="hover1"
-                      >
-                        <FaEdit color="#081336" />
-                      </span>
+                {spin ? (
+                  customers.map((customer) => (
+                    <tr
+                      className={
+                        !customer.active_customer_status
+                          ? `${"inactive"}`
+                          : `${"active"}`
+                      }
+                      key={customer.customer_id}>
+                      <td>{customer.customer_id}</td>
+                      <td>{customer.customer_first_name}</td>
+                      <td>{customer.customer_last_name}</td>
+                      <td>{customer.customer_email}</td>
+                      <td>{customer.customer_phone_number}</td>
+                      <td>
+                        {format(
+                          new Date(customer.customer_added_date),
+                          "MM - dd - yyyy | kk:mm"
+                        )}
+                      </td>
+                      <td>{customer.active_customer_status ? "Yes" : "No"}</td>
+                      <td className="edit">
+                        <span
+                          onClick={() => handleEdit(customer.customer_hash)}
+                          className="hover1">
+                          <FaEdit color="#081336" />
+                        </span>
 
-                      <span
-                        onClick={() => handleProfile(customer.customer_hash)}
-                      >
-                        <FaArrowUpRightFromSquare color="#081336" />
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                        <span
+                          onClick={() => handleProfile(customer.customer_hash)}>
+                          <FaArrowUpRightFromSquare color="#081336" />
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <span className="align-text-center">
+                    <BeatLoader color="#081336" size={50} />
+                  </span>
+                )}
               </tbody>
             </Table>
           </div>

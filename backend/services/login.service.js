@@ -48,7 +48,7 @@ async function logIn(employeeData) {
     // console.log(employee[0])
     return returnData;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 }
 

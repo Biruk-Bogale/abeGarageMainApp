@@ -18,15 +18,12 @@ function EditEmployee() {
   const [company_role_id, setCompany_role_id] = useState(1);
   const [active_employee, setActiveEmployee] = useState("");
   const [employee1, setEmployee1] = useState("");
-
-  // console.log(active_employee);
+  const [serverMsg, setServerMsg] = useState("");
 
   const { employee_hash } = useParams();
 
-  // console.log(employee_first_name);
-  // console.log(employee_last_name);
-  // console.log(employee_phone);
-  // console.log(company_role_id);
+  // spinner handler state
+  const [spin, setSpinner] = useState(false);
 
   // traget
   const firstNameDom = useRef();
@@ -34,8 +31,6 @@ function EditEmployee() {
   const phoneNumberDom = useRef();
   const companyRoleIdDom = useRef();
   const checkboxDOM = useRef();
-
-  // console.log(checkboxDOM.current)
 
   // create a variable to hold the users token
   let loggedInEmployeeToken = "";
@@ -73,14 +68,11 @@ function EditEmployee() {
   // fetch employee data using useEffect
   useEffect(() => {
     const fetchData = async () => {
-      // console.log(formData);
       try {
         const data = await employeeService?.singleEmployee(
           employee_hash,
           loggedInEmployeeToken
         );
-        // console.log(data.data.singleEmployee[0]);
-        // console.log(data.data.singleEmployee[0].company_role_id);
 
         if (data?.statusText !== "OK") {
           // set apiError to true
@@ -102,19 +94,11 @@ function EditEmployee() {
         checkboxDOM.current.checked =
           data.data.singleEmployee[0].active_employee;
         setActiveEmployee(checkboxDOM.current.checked);
-        // set employees data
-        // setEmployees(data?.data?.employees);
-
-        // console.log(checkboxDOM.current.checked);
-      } catch (error) {
-        // console.log(error);
-      }
+      } catch (error) {}
     };
-    // console.log(employee_first_name);
     fetchData();
   }, []);
 
-  // console.log(employee_first_name)
   async function handleSubmit(e) {
     // prevent the default behavior of the form submission
     e.preventDefault();
@@ -130,15 +114,25 @@ function EditEmployee() {
     };
 
     try {
+      setSpinner(!spin);
       const data = await employeeService.updateEmployee(
         FormData,
         loggedInEmployeeToken
       );
 
-      // alert("grooddddddddddddddddddddddd");
-      navigate("/admin/employees");
+      if (data.status === 200) {
+        setServerMsg("Redirecting To Employees page...");
+
+        setTimeout(() => {
+          setSpinner(!spin);
+          setServerMsg("");
+          navigate("/admin/employees");
+        }, 500);
+      }
     } catch (error) {
-      console.log(error);
+      setTimeout(() => {
+        setSpinner(!spin);
+      }, 500);
     }
   }
 
@@ -157,7 +151,6 @@ function EditEmployee() {
 
                   <form onSubmit={handleSubmit}>
                     <div className="row clearfix">
-                      
                       {/* First Name */}
                       <div className="form-group col-md-12">
                         <input
@@ -220,8 +213,7 @@ function EditEmployee() {
                           ref={companyRoleIdDom}
                           value={company_role_id}
                           onChange={companyRoleIdTracker}
-                          required
-                        >
+                          required>
                           <option value="1">Employee</option>
                           <option value="2">Manager</option>
                           <option value="3">Admin</option>
@@ -247,17 +239,16 @@ function EditEmployee() {
                           // onClick={spinner}
                           className="theme-btn btn-style-one"
                           type="submit"
-                          data-loading-text="Please wait..."
-                        >
+                          data-loading-text="Please wait...">
                           <span>
-                            {!"spin" ? (
+                            {spin ? (
                               <BeatLoader color="white" size={8} />
                             ) : (
                               "Update Employee"
                             )}
                           </span>
                         </button>
-                        {"serverMsg" && (
+                        {serverMsg && (
                           <div
                             className="validation-error"
                             style={{
@@ -266,9 +257,8 @@ function EditEmployee() {
                               fontWeight: "600",
                               padding: "25px",
                             }}
-                            role="alert"
-                          >
-                            {/* {serverMsg} */}
+                            role="alert">
+                            {serverMsg}
                           </div>
                         )}
                       </div>

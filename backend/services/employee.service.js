@@ -9,16 +9,18 @@ const bcrypt = require("bcrypt");
 
 // A function to check employee existance
 async function checkIfEmployeeExists(email) {
-  const query = "SELECT * FROM employee Where employee_email = ?";
+  try {
+    const query = "SELECT * FROM employee Where employee_email = ?";
 
-  const rows = await connection.query(query, [email]);
+    const rows = await connection.query(query, [email]);
 
-  // console.log(rows);
-
-  if (rows.length > 0) {
-    return true;
-  } else {
-    return false;
+    if (rows.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    // console.log(error)
   }
 }
 
@@ -29,15 +31,11 @@ async function createEmploye(employee) {
   try {
     // Generate a salt and hash the password
     const salt = await bcrypt.genSalt(10);
-    // console.log(salt)
 
     const hash_id = crypto.randomUUID();
-    // console.log(hash_id);
 
     // hash the password
     const hashedPassword = await bcrypt.hash(employee.employee_password, salt);
-
-    // console.log(hashedPassword)
 
     // Insert the email in to the employee table
     const queryEmployee =
@@ -48,8 +46,6 @@ async function createEmploye(employee) {
       employee.employee_email,
       employee.active_employee,
     ]);
-
-    // console.log(rows);
 
     if (rows.affectedRows !== 1) {
       return false;
@@ -105,7 +101,7 @@ async function createEmploye(employee) {
       employee_id: employee_id,
     };
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 
   // return the employee object
@@ -114,68 +110,82 @@ async function createEmploye(employee) {
 
 // A function to get employee by email
 async function getEmployeeByEmail(employee_email) {
-  const query =
-    "SELECT * FROM employee INNER JOIN employee_info ON employee.employee_id = employee_info.employee_id INNER JOIN employee_pass ON employee.employee_id = employee_pass.employee_id INNER JOIN employee_role ON employee.employee_id = employee_role.employee_id WHERE employee.employee_email = ?";
+  try {
+    const query =
+      "SELECT * FROM employee INNER JOIN employee_info ON employee.employee_id = employee_info.employee_id INNER JOIN employee_pass ON employee.employee_id = employee_pass.employee_id INNER JOIN employee_role ON employee.employee_id = employee_role.employee_id WHERE employee.employee_email = ?";
 
-  const rows = await connection.query(query, [employee_email]);
+    const rows = await connection.query(query, [employee_email]);
 
-  return rows;
+    return rows;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // A FUNCTION TO GET SINGLE EMPLOYEE BY HASH ID
 async function getSingleEmploye(employee) {
-  const employee_hash = employee;
+  try {
+    const employee_hash = employee;
 
-  // console.log(employee,"llll");
+    const query =
+      "SELECT * FROM employee INNER JOIN employee_info ON employee.employee_id = employee_info.employee_id INNER JOIN employee_role ON employee.employee_id = employee_role.employee_id INNER JOIN company_roles ON employee_role.company_role_id = company_roles.company_role_id WHERE employee.employee_hash = ?";
 
-  const query =
-    "SELECT * FROM employee INNER JOIN employee_info ON employee.employee_id = employee_info.employee_id INNER JOIN employee_role ON employee.employee_id = employee_role.employee_id INNER JOIN company_roles ON employee_role.company_role_id = company_roles.company_role_id WHERE employee.employee_hash = ?";
+    const rows = await connection.query(query, [employee_hash]);
 
-  const rows = await connection.query(query, [employee_hash]);
-
-  return rows;
+    return rows;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // A function to get all employees
 async function getAllEmployees() {
-  const query =
-    "SELECT * FROM employee INNER JOIN employee_info ON employee.employee_id = employee_info.employee_id INNER JOIN employee_role ON employee.employee_id = employee_role.employee_id INNER JOIN company_roles ON employee_role.company_role_id = company_roles.company_role_id ORDER BY employee.active_employee DESC, employee_info.employee_first_name ASC LIMIT 10";
+  try {
+    const query =
+      "SELECT * FROM employee INNER JOIN employee_info ON employee.employee_id = employee_info.employee_id INNER JOIN employee_role ON employee.employee_id = employee_role.employee_id INNER JOIN company_roles ON employee_role.company_role_id = company_roles.company_role_id ORDER BY employee.active_employee DESC, employee_info.employee_first_name ASC LIMIT 10";
 
-  const rows = await connection.query(query);
-  return rows;
+    const rows = await connection.query(query);
+    return rows;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // A function to update employees by id
 async function updateEmploye(employee) {
-  const employee_hash = employee.employee_hash;
+  try {
+    const employee_hash = employee.employee_hash;
 
-  const query1 = ` UPDATE employee_info SET employee_first_name = ?, employee_last_name = ?, employee_phone = ? WHERE employee_hash = ?`;
+    const query1 = ` UPDATE employee_info SET employee_first_name = ?, employee_last_name = ?, employee_phone = ? WHERE employee_hash = ?`;
 
-  const query2 = `UPDATE employee_role SET company_role_id = ? WHERE employee_hash = ?`;
+    const query2 = `UPDATE employee_role SET company_role_id = ? WHERE employee_hash = ?`;
 
-  const query3 = `UPDATE employee SET active_employee = ? WHERE employee_hash = ?`;
+    const query3 = `UPDATE employee SET active_employee = ? WHERE employee_hash = ?`;
 
-  // for employee_info table
-  const rows1 = await connection.query(query1, [
-    employee.employee_first_name,
-    employee.employee_last_name,
-    employee.employee_phone,
-    employee_hash,
-  ]);
+    // for employee_info table
+    const rows1 = await connection.query(query1, [
+      employee.employee_first_name,
+      employee.employee_last_name,
+      employee.employee_phone,
+      employee_hash,
+    ]);
 
-  // for employee_role table
-  const rows2 = await connection.query(query2, [
-    employee.company_role_id,
-    employee_hash,
-  ]);
+    // for employee_role table
+    const rows2 = await connection.query(query2, [
+      employee.company_role_id,
+      employee_hash,
+    ]);
 
-  // for employee table
-  const rows3 = await connection.query(query3, [
-    employee.active_employee,
-    employee_hash,
-  ]);
+    // for employee table
+    const rows3 = await connection.query(query3, [
+      employee.active_employee,
+      employee_hash,
+    ]);
 
-  return { rows1, rows2, rows3 };
+    return { rows1, rows2, rows3 };
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // A function to delete employees by id

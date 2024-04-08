@@ -15,15 +15,14 @@ function EditOrder() {
   const [orderServices, setOrderServices] = useState([]);
   const [completed, setCompletedOrder] = useState([]);
   const [orderServiceId, setOrderServiceId] = useState([]);
+  const [serverMsg, setServerMsg] = useState("");
 
-  // console.log(formData);
+  // spinner handler state
+  const [spin, setSpinner] = useState(false);
 
   const { order_hash } = useParams();
 
   const order_id = orders.order_id;
-
-  // console.log(completed);
-  console.log(orders.order_status);
 
   // create a variable to hold the users token
   let loggedInEmployeeToken = "";
@@ -40,11 +39,8 @@ function EditOrder() {
     try {
       const data = await Order.getSingleOrder(order_hash);
 
-      // console.log(data.data.singleOrder[0]);
       setOrders(data.data.singleOrder[0]);
       setOrderServices(data.data.singleOrder[0].order_services);
-
-      // setVehicleError("");
     } catch (error) {
       console.log(error);
     }
@@ -64,27 +60,9 @@ function EditOrder() {
       setOrderServiceId([...orderServiceId, order_service_id]);
       setCompletedOrder([...completed, service_completed]);
     } else {
-      setOrderServiceId(
-        orderServiceId.filter(
-          (id) =>
-            // (console.log(id)), 1,2
+      setOrderServiceId(orderServiceId.filter((id) => id !== order_service_id));
 
-            // (console.log(serviceId)), 2
-
-            id !== order_service_id
-        )
-      );
-
-      setCompletedOrder(
-        completed.filter(
-          (id) =>
-            // (console.log(id)), 1,2
-
-            // (console.log(serviceId)), 2
-
-            id !== service_completed
-        )
-      );
+      setCompletedOrder(completed.filter((id) => id !== service_completed));
     }
   };
 
@@ -101,11 +79,25 @@ function EditOrder() {
     };
 
     try {
-      const updateOrder = Order.updateOrder(formData, loggedInEmployeeToken);
+      setSpinner(!spin);
+      const updateOrder = await Order.updateOrder(
+        formData,
+        loggedInEmployeeToken
+      );
+      fetchData();
+      if (updateOrder?.status === 200) {
+        fetchData();
+        setServerMsg("Order Updated Succesfull...");
 
+        setTimeout(() => {
+          setSpinner(!spin);
+          setServerMsg("");
+        }, 2000);
+      }
       fetchData();
     } catch (error) {
       console.log(error);
+      fetchData();
     }
   }
 
@@ -214,72 +206,70 @@ function EditOrder() {
                   </div>
 
                   {orderServices.map((service, i) => (
-                    <>
-                      <div
-                        key={i}
-                        className="bg-white Regular shadow my-2 d-flex ">
-                        <div className="py-4 pb-1 px-4 flex-grow-1 ">
-                          <h5 className="mb-1 font-weight-bold ">
-                            {service.service_name}
-                          </h5>
-                          <h6 className=" mb-1 text-secondary">
-                            {service.service_description}
-                          </h6>
-                        </div>
-                        <div className="order_status px-5">
-                          <h6
-                            className={
-                              service.service_completed
-                                ? "text-center rounded-pill bg-success font-weight-bold text-white px-5"
-                                : "text-center rounded-pill bg-warning font-weight-bold px-5"
-                            }>
-                            {service.service_completed
-                              ? "Completed"
-                              : "In Progress"}
-                          </h6>
-                        </div>
-
-                        <div className="d-flex align-items-center px-4">
-                          {service.service_completed ? null : (
-                            <input
-                              type="checkbox"
-                              //
-
-                              // ref={(el) => {
-                              //   // {console.log(el)}
-                              //   serviceDoms.current[service.service_id] = el;
-                              // }}
-                              // ref={serviceDoms}
-                              //
-
-                              onChange={
-                                (e) =>
-                                  handleCompleteOrder(
-                                    service.order_service_id,
-                                    1,
-                                    e.target.checked
-                                  )
-
-                                // {
-                                //   console.log(serviceDoms.current.value);
-                                //   console.log(e.target.checked);
-                                //   console.log(service.service_id);
-                                // }
-                              }
-                              //
-
-                              // checked={selectedServices.includes(
-                              //   service.service_id
-                              // )}
-                              //
-
-                              className="wide-checkbox"
-                              // required
-                            />
-                          )}
-                        </div>
+                    <div
+                      key={i}
+                      className="bg-white Regular shadow my-2 d-flex ">
+                      <div className="py-4 pb-1 px-4 flex-grow-1 ">
+                        <h5 className="mb-1 font-weight-bold ">
+                          {service.service_name}
+                        </h5>
+                        <h6 className=" mb-1 text-secondary">
+                          {service.service_description}
+                        </h6>
                       </div>
-                    </>
+                      <div className="order_status px-5">
+                        <h6
+                          className={
+                            service.service_completed
+                              ? "text-center rounded-pill bg-success font-weight-bold text-white px-5"
+                              : "text-center rounded-pill bg-warning font-weight-bold px-5"
+                          }>
+                          {service.service_completed
+                            ? "Completed"
+                            : "In Progress"}
+                        </h6>
+                      </div>
+
+                      <div className="d-flex align-items-center px-4">
+                        {service.service_completed ? null : (
+                          <input
+                            type="checkbox"
+                            //
+
+                            // ref={(el) => {
+                            //   // {console.log(el)}
+                            //   serviceDoms.current[service.service_id] = el;
+                            // }}
+                            // ref={serviceDoms}
+                            //
+
+                            onChange={
+                              (e) =>
+                                handleCompleteOrder(
+                                  service.order_service_id,
+                                  1,
+                                  e.target.checked
+                                )
+
+                              // {
+                              //   console.log(serviceDoms.current.value);
+                              //   console.log(e.target.checked);
+                              //   console.log(service.service_id);
+                              // }
+                            }
+                            //
+
+                            // checked={selectedServices.includes(
+                            //   service.service_id
+                            // )}
+                            //
+
+                            className="wide-checkbox"
+                            // required
+                          />
+                        )}
+                      </div>
+                    </div>
                   ))}
                 </div>
 
@@ -295,6 +285,19 @@ function EditOrder() {
                       : "🎉All Orders Completed🎉"}
                   </h6>
                 </button>
+                {serverMsg && (
+                  <div
+                    className="validation-error"
+                    style={{
+                      color: "green",
+                      fontSize: "100%",
+                      fontWeight: "600",
+                      padding: "25px",
+                    }}
+                    role="alert">
+                    {serverMsg}
+                  </div>
+                )}
               </form>
             </div>
           </div>

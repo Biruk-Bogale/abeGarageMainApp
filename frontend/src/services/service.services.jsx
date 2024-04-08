@@ -1,7 +1,6 @@
 import axios from "../axiosConfig";
 
 async function addService(formData, loggedInEmployeeToken) {
-  //   console.log(formData);
 
   const headers = {
     "x-access-token": loggedInEmployeeToken,
@@ -23,12 +22,10 @@ async function getAllServices(loggedInEmployeeToken) {
 }
 
 async function updateService(formData, loggedInEmployeeToken) {
-  // console.log(loggedInEmployeeToken)
   const headers = {
     "x-access-token": loggedInEmployeeToken,
   };
   const data = await axios.put("/api/service/update", formData, { headers });
-  // console.log(data)
 
   return data;
 }
@@ -38,10 +35,8 @@ async function singleService(formData, loggedInEmployeeToken) {
     const headers = {
       "x-access-token": loggedInEmployeeToken,
     };
-    // console.log(formData);
     const data = await axios.get(`/api/service/single/${formData}`, { headers });
   
-    // console.log(data);
   
     return data;
   }

@@ -12,8 +12,6 @@ const {
 async function createEmployee(req, res, next) {
   const { employee_email } = req.body;
 
-  // console.log(req.headers);
-
   const employeeExists = await checkIfEmployeeExists(employee_email);
 
   // if employee exists, send a response to a client
@@ -28,8 +26,6 @@ async function createEmployee(req, res, next) {
       // create the employee
       const employee = await createEmploye(employeeData);
 
-      // console.log(employee);
-
       if (!employee) {
         return res.status(400).json({
           error: "Failed to add the employee!",
@@ -40,7 +36,6 @@ async function createEmployee(req, res, next) {
         });
       }
     } catch (error) {
-      console.log(error);
       return res.status(400).json({
         error: "Something went wrong!",
       });
@@ -65,7 +60,6 @@ async function getAllEmployeees(req, res, next) {
       });
     }
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       error: "Something went wrong!",
     });
@@ -75,10 +69,8 @@ async function getAllEmployeees(req, res, next) {
 // get single employee data controller
 async function getSingleEmployee(req, res, next) {
   const employee_hash = req.params.hash;
-  console.log(employee_hash)
   try {
     const singleEmployee = await getSingleEmploye(employee_hash);
-    // console.log(singleEmployee);
 
     if (!singleEmployee) {
       res.status(400).json({
@@ -91,7 +83,6 @@ async function getSingleEmployee(req, res, next) {
       });
     }
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       error: "Something went wrong!",
     });
@@ -103,16 +94,10 @@ async function updateEmployee(req, res, next) {
   try {
     const updateEmployee = await updateEmploye(req.body);
 
-    // console.log(updateEmployee);
-
     // the returned rows value
     const rows1 = updateEmployee.rows1.affectedRows;
     const rows2 = updateEmployee.rows2.affectedRows;
     const rows3 = updateEmployee.rows3.affectedRows;
-
-    // console.log(rows1)
-    // console.log(rows2)
-    // console.log(rows3)
 
     if (!updateEmployee) {
       res.status(400).json({
@@ -128,7 +113,6 @@ async function updateEmployee(req, res, next) {
       });
     }
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       error: "Something went wrong!",
     });
@@ -141,7 +125,7 @@ async function deleteEmployee(req, res, next) {
   try {
     const deleteEmployee = await deleteEmploye(employee_id);
 
-    if (!deleteEmploye) {
+    if (!deleteEmployee) {
       res.status(200).json({
         error: "Delete Incomplete!",
       });
@@ -151,7 +135,6 @@ async function deleteEmployee(req, res, next) {
       });
     }
   } catch (error) {
-    console.log(error);
     res.status(400).json({
       error: "Something went wrong!",
     });

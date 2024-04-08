@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 // import recat components
 import { Table, Button } from "react-bootstrap";
 
 // import react icons
 import { FaEdit } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
+
+import { BeatLoader } from "react-spinners";
 
 // import the auth hook
 import { useAuth } from "../../../../Context/AuthContext";
@@ -22,14 +23,11 @@ import { format } from "date-fns";
 function EmployeesList() {
   //  employees state to store the emplooyes data
   const [employees, setEmployees] = useState([]);
-  const [ddd, setddd] = useState("");
-
-  // console.log(employees);
-  // const { id } = useParams();
 
   const navigate = useNavigate();
 
-  // console.log(employees[0].employee_id)
+  // spinner handler state
+  const [spin, setSpinner] = useState(false);
 
   // to serve as aflag to show the error message
   const [apiError, setApiError] = useState(false);
@@ -45,16 +43,14 @@ function EmployeesList() {
   if (employee) {
     token = employee?.employee_token;
   }
-  //   console.log(employee?.employee_token)
 
   // fetch employees data using useEffect
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await employeeService?.getAllEmployees(token);
-        // console.log(data.status);
 
-        if (data?.statusText !== "OK") {
+        if (data?.status !== 200) {
           // set apiError to true
           setApiError(true);
 
@@ -69,24 +65,15 @@ function EmployeesList() {
 
         // set employees data
         setEmployees(data?.data?.employees);
-
-        // console.log(data?.data.employees);
+        setTimeout(() => {
+          setSpinner(!spin);
+        }, 200);
       } catch (error) {
         // console.log(error);
       }
     };
     fetchData();
   }, []);
-
-  // handle Delete
-  function handleDelete(id) {
-    setddd(id);
-    console.log(id);
-    alert("kkk");
-    setTimeout(() => {
-      navigate(`/admin/employees`);
-    }, 2000);
-  }
 
   function handleEdit(id) {
     navigate(`/admin/employee-update/${id}`);
@@ -125,40 +112,47 @@ function EmployeesList() {
                 </tr>
               </thead>
               <tbody>
-                {employees.map((employe) => (
-                  <tr
-                    className={
-                      !employe.active_employee ? `${"inactive"}` : `${"active"}`
-                    }
-                    key={employe.employee_id}
-                    onClick={() => handleEdit(employe.employee_hash)}
-                  >
-                    <td>{employe.active_employee ? "Yes" : "No"}</td>
-                    <td>{employe.employee_first_name}</td>
-                    <td>{employe.employee_last_name}</td>
-                    <td>{employe.employee_email}</td>
-                    <td>{employe.employee_phone}</td>
-                    <td>
-                      {format(
-                        new Date(employe.added_date),
-                        "MM - dd - yyyy | kk:mm"
-                      )}
-                    </td>
-                    <td>{employe.company_role_name}</td>
-                    <td className="edit">
-                      <span  className="hover1">
-                        <FaEdit color="#081336" />
-                      </span>
+                {spin ? (
+                  employees.map((employe) => (
+                    <tr
+                      className={
+                        !employe.active_employee
+                          ? `${"inactive"}`
+                          : `${"active"}`
+                      }
+                      key={employe.employee_id}
+                      onClick={() => handleEdit(employe.employee_hash)}>
+                      <td>{employe.active_employee ? "Yes" : "No"}</td>
+                      <td>{employe.employee_first_name}</td>
+                      <td>{employe.employee_last_name}</td>
+                      <td>{employe.employee_email}</td>
+                      <td>{employe.employee_phone}</td>
+                      <td>
+                        {format(
+                          new Date(employe.added_date),
+                          "MM - dd - yyyy | kk:mm"
+                        )}
+                      </td>
+                      <td>{employe.company_role_name}</td>
+                      <td className="edit">
+                        <span className="hover1">
+                          <FaEdit color="#081336" />
+                        </span>
 
-                      {/* <span
+                        {/* <span
                         className="hover"
                         onClick={() => handleDelete(employe.employee_id)}
                       >
                         <MdDelete color="#DC3545" />
                       </span> */}
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <span className="align-text-center">
+                    <BeatLoader color="#081336" size={50} />
+                  </span>
+                )}
               </tbody>
             </Table>
           </div>

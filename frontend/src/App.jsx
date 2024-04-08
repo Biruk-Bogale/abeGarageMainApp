@@ -48,30 +48,30 @@ function App() {
   return (
     <>
       <Header />
+
       <Routes>
+        {/*  */}
+
         {/* home page route */}
         <Route path="/" element={<Home />} />
+
         {/* login page route */}
         <Route path="/login" element={<Login />} />
+
         {/* about page route */}
         <Route path="/about" element={<About />} />
+
         {/* Services page route */}
         <Route path="/services" element={<Service />} />
+
         {/* Contact page route */}
         <Route path="/contact" element={<Contact />} />
+
         {/* unauthorized page route */}
         <Route path="/unauthorized" element={<Unauthorized />} />
-        {/* Orders page route */}
 
-        {/* Customers page route */}
-        <Route
-          path="/admin/customers"
-          element={
-            <PrivateAuthRoute roles={[2, 3]}>
-              <Customers />
-            </PrivateAuthRoute>
-          }
-        />
+        {/* Customers List page route */}
+        <Route path="/admin/customers" element={<Customers />} />
 
         {/* add customer page route */}
         <Route path="/admin/add-customer" element={<AddCustomer />} />
@@ -88,27 +88,22 @@ function App() {
           element={<CustomerProfilee />}
         />
 
-        {/* New Order Page Route */}
+        {/* services list Page Route */}
         <Route path="/admin/services" element={<Services />} />
 
-        {/* Customer Profile Page Route */}
+        {/* services Update Page Route */}
         <Route
           path="/admin/services/service-update/:service_hash"
           element={<EditService />}
         />
 
-        {/* New Order Page Route */}
+        {/* Add New Order Page Route */}
         <Route path="/admin/order" element={<NewOrder />} />
 
-        <Route
-          path="/admin/orders"
-          element={
-            <PrivateAuthRoute roles={[1, 2, 3]}>
-              <Orders />
-            </PrivateAuthRoute>
-          }
-        />
+        {/* Orders List Page Route*/}
+        <Route path="/admin/orders" element={<Orders />} />
 
+        {/* Order Update Page Route*/}
         <Route
           path="admin/orders/order-update/:order_hash"
           element={
@@ -118,40 +113,40 @@ function App() {
           }
         />
 
+        {/* Order detail Page Route*/}
         <Route
           path="/orders/order-detail/:order_hash"
           element={<OrderDetails />}
         />
 
+        {/* Add customer Order Page Route*/}
         <Route
           path="admin/order/add-new-order/:customer_hash"
-          element={
-            <PrivateAuthRoute roles={[1, 2, 3]}>
-              <AddNewOrders />
-            </PrivateAuthRoute>
-          }
+          element={<AddNewOrders />}
         />
 
+        {/* Add customer service Order Page Route*/}
         <Route
           path="admin/order/add-new-order/select-service/:customer_hash/:vehicle_id"
-          element={
-            <PrivateAuthRoute roles={[1, 2, 3]}>
-              <CreateNewOrders />
-            </PrivateAuthRoute>
-          }
+          element={<CreateNewOrders />}
         />
+
+        {/* Dashboard page route */}
+        <Route path="/admin" element={<Admin />} />
 
         {/* Employees page route */}
         <Route path="/admin/employees" element={<Employees />} />
-        {/* admin page route */}
-        <Route path="/admin" element={<Admin />} />
+
         {/* Edit Employees page route */}
         <Route
           path="/admin/employee-update/:employee_hash"
           element={<EditEmployee />}
         />
+
         {/* add employee page route */}
         <Route path="/admin/add-employee" element={<AddEmployee />} />
+
+        {/*  */}
       </Routes>
       <Footer />
     </>
