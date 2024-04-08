@@ -437,3 +437,13 @@ input:disabled {
   position: relative;
   /* height: 100%; */
 }
+
+.hover-zoom {
+  overflow: hidden;
+  position: relative;
+}
+
+.odometer {
+  height: 420px;
+  object-fit: cover;
+}
