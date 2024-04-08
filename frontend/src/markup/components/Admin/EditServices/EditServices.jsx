@@ -131,12 +131,13 @@ function ServiceList() {
                     ref={serviceDescriptionDom}
                     onChange={serviceDescriptionTracker}
                     value={service_description}
-                    required=""></textarea>
+                    required=""
+                  ></textarea>
                 </div>
 
                 <div className="form-group col-md-12">
                   <button class="theme-btn btn-style-one" type="submit">
-                    <span>ADD SERVICE</span>
+                    <span>UPDATE SERVICE</span>
                   </button>
                 </div>
               </div>

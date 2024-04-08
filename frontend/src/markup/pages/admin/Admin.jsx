@@ -37,9 +37,8 @@ function Admin(props) {
             paddingLeft: "320px",
             position: "absolute",
             top: "300px",
-          }}>
-          You must login frist!
-        </h5>
+          }}
+        ></h5>
         <LoginForm />
       </div>
     );

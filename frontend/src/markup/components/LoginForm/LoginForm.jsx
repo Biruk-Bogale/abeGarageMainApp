@@ -76,6 +76,8 @@ function LoginForm(props) {
       setSpinner(!spin);
       const { data } = await loginEmployee(formData);
 
+      console.log(data);
+
       // Save the employee token in the local storage
       if (data.status === "success") {
         if (data.data.employee_token) {
@@ -97,6 +99,7 @@ function LoginForm(props) {
         }
       }
     } catch (error) {
+      console.log(error);
       setSpinner(!spin);
 
       setServerError(error.response.data.message);
@@ -165,7 +168,8 @@ function LoginForm(props) {
                       <button
                         className="theme-btn btn-style-one"
                         type="submit"
-                        data-loading-text="Please wait...">
+                        data-loading-text="Please wait..."
+                      >
                         <span>
                           {" "}
                           {spin ? (
@@ -184,7 +188,8 @@ function LoginForm(props) {
                             fontWeight: "600",
                             padding: "25px",
                           }}
-                          role="alert">
+                          role="alert"
+                        >
                           {serverMsg}
                         </div>
                       )}

@@ -32,6 +32,7 @@ function OrdersList() {
 
   // to serve as aflag to show the error message
   const [apiError, setApiError] = useState(false);
+9999
 
   // store the error message
   const [apiErrorMessage, setApiErrorMessage] = useState(null);
@@ -164,7 +165,8 @@ function OrdersList() {
                             order.order_status
                               ? "text-center rounded-pill bg-success font-weight-bold text-white                            "
                               : "text-center rounded-pill bg-warning font-weight-bold"
-                          }>
+                          }
+                        >
                           {order.order_status ? "Completed" : "In Progress"}
                         </h6>
                       </td>
@@ -172,7 +174,8 @@ function OrdersList() {
                       <td className="edit">
                         <span
                           onClick={() => handleEdit(order.order_hash)}
-                          className="hover1">
+                          className="hover1"
+                        >
                           <FaEdit color="#081336" />
                         </span>
 

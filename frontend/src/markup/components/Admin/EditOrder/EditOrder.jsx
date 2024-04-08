@@ -72,9 +72,11 @@ function EditOrder() {
       service_completed: completed.map((completed_value) => ({
         completed_value: completed_value,
       })),
+
       order_services: orderServiceId.map((order_service_id) => ({
         order_service_id: order_service_id,
       })),
+
       order_id,
     };
 
@@ -96,7 +98,7 @@ function EditOrder() {
       }
       fetchData();
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       fetchData();
     }
   }
@@ -208,7 +210,8 @@ function EditOrder() {
                   {orderServices.map((service, i) => (
                     <div
                       key={i}
-                      className="bg-white Regular shadow my-2 d-flex ">
+                      className="bg-white Regular shadow my-2 d-flex "
+                    >
                       <div className="py-4 pb-1 px-4 flex-grow-1 ">
                         <h5 className="mb-1 font-weight-bold ">
                           {service.service_name}
@@ -223,7 +226,8 @@ function EditOrder() {
                             service.service_completed
                               ? "text-center rounded-pill bg-success font-weight-bold text-white px-5"
                               : "text-center rounded-pill bg-warning font-weight-bold px-5"
-                          }>
+                          }
+                        >
                           {service.service_completed
                             ? "Completed"
                             : "In Progress"}
@@ -279,7 +283,8 @@ function EditOrder() {
                       !orders.order_status
                         ? "text-center rounded-pill  bg-warning font-weight-bold px-5 py-3"
                         : "text-center rounded-pill  bg-success font-weight-bold py-3 text-white"
-                    }>
+                    }
+                  >
                     {!orders.order_status
                       ? "Update Order"
                       : "🎉All Orders Completed🎉"}
@@ -294,7 +299,8 @@ function EditOrder() {
                       fontWeight: "600",
                       padding: "25px",
                     }}
-                    role="alert">
+                    role="alert"
+                  >
                     {serverMsg}
                   </div>
                 )}

@@ -74,7 +74,7 @@ function EditEmployee() {
           loggedInEmployeeToken
         );
 
-        if (data?.statusText !== "OK") {
+        if (data?.status !== 200) {
           // set apiError to true
           setApiError(true);
 
@@ -213,7 +213,8 @@ function EditEmployee() {
                           ref={companyRoleIdDom}
                           value={company_role_id}
                           onChange={companyRoleIdTracker}
-                          required>
+                          required
+                        >
                           <option value="1">Employee</option>
                           <option value="2">Manager</option>
                           <option value="3">Admin</option>
@@ -239,7 +240,8 @@ function EditEmployee() {
                           // onClick={spinner}
                           className="theme-btn btn-style-one"
                           type="submit"
-                          data-loading-text="Please wait...">
+                          data-loading-text="Please wait..."
+                        >
                           <span>
                             {spin ? (
                               <BeatLoader color="white" size={8} />
@@ -257,7 +259,8 @@ function EditEmployee() {
                               fontWeight: "600",
                               padding: "25px",
                             }}
-                            role="alert">
+                            role="alert"
+                          >
                             {serverMsg}
                           </div>
                         )}

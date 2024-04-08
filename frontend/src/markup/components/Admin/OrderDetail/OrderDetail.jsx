@@ -141,7 +141,8 @@ function OrderDetail() {
                   <>
                     <div
                       key={i}
-                      className="bg-white Regular shadow my-2 d-flex ">
+                      className="bg-white Regular shadow my-2 d-flex "
+                    >
                       <div className="py-4 pb-1 px-4 flex-grow-1 ">
                         <h5 className="mb-1 font-weight-bold ">
                           {service.service_name}
@@ -156,7 +157,8 @@ function OrderDetail() {
                             service.service_completed
                               ? "text-center rounded-pill bg-success font-weight-bold text-white px-5"
                               : "text-center rounded-pill bg-warning font-weight-bold px-5"
-                          }>
+                          }
+                        >
                           {service.service_completed
                             ? "Completed"
                             : "In Progress"}
@@ -215,7 +217,7 @@ function OrderDetail() {
                   <div className="bg-white Regular shadow my-2 d-flex ">
                     <div className="py-4 pb-1 px-4 flex-grow-1 ">
                       <h5 className="mb-1 font-weight-bold ">
-                        order Date:
+                        Price:
                         <span className="additional">
                           {" "}
                           ${orders.order_total_price}
@@ -233,7 +235,8 @@ function OrderDetail() {
                         orders.order_status
                           ? "text-center rounded-pill bg-success font-weight-bold text-white py-2 py-2"
                           : "text-center rounded-pill bg-warning font-weight-bold px-3 py-2"
-                      }>
+                      }
+                    >
                       {orders.order_status ? "Completed" : "In Progress"}
                     </h6>
                   </div>

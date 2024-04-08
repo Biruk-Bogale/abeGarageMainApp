@@ -131,7 +131,7 @@ function CustomerProfile() {
         loggedInEmployeeToken
       );
 
-      if (data?.statusText !== "OK") {
+      if (data?.status !== 200) {
         // set apiError to true
         setApiError(true);
 
@@ -149,6 +149,7 @@ function CustomerProfile() {
       // console.log(error);
     }
   };
+
 
   //afunction to fetch customer vehicle data
   const fetchData2 = async () => {
