@@ -17,12 +17,12 @@ async function logIn(employeeData) {
       employeeData.employee_email
     );
 
-    if (employee.length == 0) {
-      returnData = {
+    if (employee.length < 1) {
+      const returnData1 = {
         status: "fail",
         message: "employee does not exist",
       };
-      return returnData;
+      return returnData1;
     }
 
     const passwordMatch = await bcrypt.compare(

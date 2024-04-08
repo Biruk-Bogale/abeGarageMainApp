@@ -3,6 +3,7 @@ const insatllService = require("../services/install.service");
 
 // create a function to handle the install request
 async function install(req, res, next) {
+try {
   // Call the install service to create the database tables
   const installMessage = await insatllService.install();
 
@@ -20,6 +21,12 @@ async function install(req, res, next) {
       message: installMessage,
     });
   }
+} catch (error) {
+    return res.status(400).json({
+      error: "Something went wrong!",
+      error1:error
+    });
+}
 }
 
 // install()

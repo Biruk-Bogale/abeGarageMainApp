@@ -17,7 +17,7 @@ async function logIn(req, res, next) {
 
     // if the employee is not found
     if (employee.status === "fail") {
-      res.status(403).json({
+      return res.status(403).json({
         status: employee.status,
         message: employee.message,
       });
@@ -39,13 +39,13 @@ async function logIn(req, res, next) {
       employee_token: token,
     };
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "success",
       message: "employee logged in successfully",
       data: sendBack,
     });
   } catch (error) {
-    res.status(400).json({
+    return res.status(400).json({
       error: "Something went wrong!",
     });
   }
